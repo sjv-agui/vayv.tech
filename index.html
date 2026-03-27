@@ -65,6 +65,8 @@
     transition: opacity .6s ease;
     animation: spin-ball 3s ease-in-out infinite; /* always swaying */
     transform-origin: center top;
+    border-radius: 50%;
+    overflow: hidden;
   }
   /* when active: ball fades out so photo shows */
   #ball.active #ball-disco {
@@ -138,7 +140,7 @@
 
   /* ── responsive: smaller on phones ── */
   @media (max-width: 480px) {
-    #ball, #ball-disco { width: 140px; height: 140px; border-radius: 50%; overflow: hidden; }
+    #ball, #ball-disco { width: 140px; height: 140px }
     #ball-photo { width: 108px; height: 108px; }
   }
 </style>
