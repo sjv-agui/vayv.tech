@@ -7,6 +7,9 @@
 <meta name="description" content="Sean Aguinaldo from Oslo supports companies and partners across the Nordics with innovation, entrepreneurship, B2B partnerships, program management, and sustainable growth." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪩</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+ 
+<script src="https://w.soundcloud.com/player/api.js"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 100%; height: 100%; background: #060608; color: #e8e4dc; font-family: 'DM Mono', monospace; overflow: hidden; touch-action: manipulation; }
@@ -306,18 +309,37 @@ const ball  = document.getElementById('ball');
 const hint  = document.getElementById('hint');
 
 /* ── SoundCloud ── */
-function toggleDisco(e){
+// Initialize the widget once, outside the function
+const widget = SC.Widget(scFrame);
+
+function toggleDisco(e) {
   e.preventDefault();
-  const scFrame = document.getElementById('sc-player');
   active = !active;
   ball.classList.toggle('active', active);
   hint.classList.toggle('hidden', active);
-  if(active){
-    scFrame.src = 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/keighjeigh/bee-gees-stayin-alive-4&auto_play=true&start_from=80&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false';
+
+  if (active) {
+    // If iframe src is empty, set it once
+    if (!scFrame.src) {
+      scFrame.src = 'https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/keighjeigh/bee-gees-stayin-alive-4&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false';
+      
+      // Wait for iframe to load before controlling it
+      scFrame.onload = () => {
+        widget.seekTo(80000);  // 80 seconds in milliseconds
+        widget.setVolume(0.5); // 50% volume
+        widget.play();
+      };
+    } else {
+      // If already loaded, just control playback
+      widget.seekTo(80000);
+      widget.setVolume(0.5);
+      widget.play();
+    }
   } else {
-    scFrame.src = '';
-    discoAngle = 0; ctxB.clearRect(0,0,W,H); ctxF.clearRect(0,0,W,H);
-    /* open the nav menu so visitor sees the links */
+    widget.pause();
+    discoAngle = 0;
+    ctxB.clearRect(0, 0, W, H);
+    ctxF.clearRect(0, 0, W, H);
     setTimeout(() => menu.classList.add('open'), 300);
   }
 }
