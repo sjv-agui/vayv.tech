@@ -1,0 +1,39 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: images
+public_folder: /images
+
+collections:
+  - name: cv
+    label: CV Data
+    files:
+      - name: cv_data
+        label: CV Data
+        file: cv-data.json
+        format: json
+        fields:
+          - { name: email, label: Email, widget: string }
+          - { name: linkedin, label: LinkedIn URL, widget: string }
+          - { name: cv_url, label: CV Download URL, widget: string }
+          - name: en
+            label: English
+            widget: object
+            fields:
+              - { name: tagline, label: Tagline, widget: string }
+              - { name: hint, label: Hint text, widget: string }
+              - name: reflections
+                label: Reflections
+                widget: list
+                field: { name: item, label: Item, widget: string }
+          - name: no
+            label: Norwegian
+            widget: object
+            fields:
+              - { name: tagline, label: Tagline, widget: string }
+              - { name: hint, label: Hint text, widget: string }
+              - name: reflections
+                label: Reflections
+                widget: list
+                field: { name: item, label: Item, widget: string }

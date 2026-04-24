@@ -145,40 +145,20 @@
     #ball-photo { width: 108px; height: 108px; }
   }
 </style>
- <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+ <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
  <script>
-      if (window.location.hash === '#cms') {
-        CMS.init({
-          config: {
-            backend: {
-              name: 'git-gateway',
-              branch: 'main'
-            },
-            media_folder: 'images',
-            collections: [
-              {
-                name: 'cv',
-                label: 'CV Data',
-                files: [
-                  {
-                    name: 'cv_data',
-                    label: 'CV Data',
-                    file: 'cv-data.json',
-                    fields: [
-                      { name: 'name', label: 'Name', widget: 'string' },
-                      { name: 'title', label: 'Title', widget: 'string' },
-                      { name: 'bio', label: 'Bio', widget: 'text' }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        });
-      }
-    </script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', user => {
+        if (!user) {
+          window.netlifyIdentity.on('login', () => {
+            document.location.href = '/admin/';
+          });
+        }
+      });
+    }
+  </script>
 <canvas id="c-back"></canvas>
 <canvas id="c-front"></canvas>
 
