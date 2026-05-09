@@ -243,6 +243,7 @@ function resize(){
 }
 resize();
 window.addEventListener('resize', resize);
+window.addEventListener('resize', () => { if (active && currentSpotItems.length) buildSpots(currentSpotItems); });
 
 /* ── state ── */
 let DATA = null, lang = 'en', active = false, discoAngle = 0, spots = [];
@@ -264,14 +265,16 @@ function shuffleArray(items){
 /* ── spot builder — golden angle, well-spaced ── */
 function buildSpots(items){
   currentSpotItems = items.slice();
-  const maxItems = window.innerWidth < 640 ? 16 : 30;
+  const maxItems = window.innerWidth < 640 ? 8 : 30;
   const shuffled = shuffleArray(currentSpotItems);
   const capped = shuffled.slice(0, maxItems);
+  const phiStart = window.innerWidth < 640 ? Math.PI * 0.06 : Math.PI * 0.08;
+  const phiRange = window.innerWidth < 640 ? Math.PI * 0.94 : Math.PI * 0.84;
   spots = capped.map((text, i) => ({
     text: '✨ ' + text,
     /* spread elevation more broadly so spots don't cluster at equator */
-    phi:    (Math.PI * 0.08) + (i / capped.length) * Math.PI * 0.84,
-    theta0: i * 2.399963,
+    phi:    phiStart + (i / capped.length) * phiRange,
+    theta0: i * (window.innerWidth < 640 ? 2.5 : 2.399963),
     colorIndex: i % discoTextColors.length
   }));
 }
@@ -291,15 +294,16 @@ function project(theta, phi, r){
 /* ball radius in px (used to split front/back) */
 function ballR(){ return Math.min(W, H) * 0.10; }
 /* sphere radius — bigger = more spread */
-function sphereR(){ return Math.min(W, H) * (window.innerWidth < 640 ? 0.52 : 0.45); }
+function sphereR(){ return Math.min(W, H) * (window.innerWidth < 640 ? 0.70 : 0.45); }
 
 function drawSpot(ctx2d, s, depth){
   const alpha    = 0.28 + depth * 0.70;
-  const baseSize = window.innerWidth < 640 ? 10 : 13;
-  const extraSize = window.innerWidth < 640 ? 5 : 7;
+  const baseSize = window.innerWidth < 640 ? 9 : 13;
+  const extraSize = window.innerWidth < 640 ? 4 : 7;
   const fontSize = Math.round(baseSize + s.scale * extraSize);
   ctx2d.font = `${fontSize}px 'DM Mono', monospace`;
-  const tw = ctx2d.measureText(s.text).width, pad = window.innerWidth < 640 ? 6 : 8;
+  ctx2d.textBaseline = 'top';
+  const tw = ctx2d.measureText(s.text).width, pad = window.innerWidth < 640 ? 5 : 8;
   ctx2d.save();
   ctx2d.globalAlpha = alpha * 0.40;
   ctx2d.fillStyle = 'rgba(10,10,16,0.9)';
@@ -391,6 +395,11 @@ function toggleDisco(e) {
   if (active) {
     if (currentSpotItems.length) buildSpots(currentSpotItems);
     if (!widgetInitialised && window.SC) initWidget();
+    if (widget) {
+      try { widget.play(); } catch (err) {
+        /* ignore if not ready */
+      }
+    }
     if (scReady) {
       widget.seekTo(75000); // 1m15s in ms
       widget.setVolume(50);
@@ -410,6 +419,7 @@ function toggleDisco(e) {
   }
 }
 ball.addEventListener('click',      toggleDisco);
+ball.addEventListener('touchstart', e => { if (!widgetInitialised && window.SC) initWidget(); }, { passive: true });
 ball.addEventListener('touchend',   toggleDisco, { passive: false });
 
 /* ── nav ── */
