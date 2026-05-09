@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; background: #060608; color: #e8e4dc; font-family: 'DM Mono', monospace; overflow: hidden; touch-action: manipulation; }
+  html, body { width: 100%; height: 100%; background: #060608; color: #E8E4DC; font-family: 'DM Mono', monospace; overflow: hidden; touch-action: manipulation; }
 
   /* two canvas layers — back and front */
   canvas { position: fixed; inset: 0; pointer-events: none; }
@@ -41,6 +41,21 @@
   }
   #nav-menu a:last-child, #nav-menu button:last-child { border: none; }
   #nav-menu a:hover, #nav-menu button:hover { background: rgba(255,255,255,.07); }
+  #nav-menu.persistent {
+    position: fixed; top: 0; left: 0; right: 0; display: flex;
+    justify-content: center; gap: 8px; padding: 8px 16px;
+    border-radius: 0; border: none; min-width: auto;
+    box-shadow: inset 0 -1px 0 rgba(255,255,255,.08);
+  }
+  #nav-menu.persistent a,
+  #nav-menu.persistent button {
+    display: inline-flex; width: auto; text-align: center;
+    padding: 10px 14px; border-bottom: none; border-right: 1px solid rgba(255,255,255,.06);
+  }
+  #nav-menu.persistent a:last-child,
+  #nav-menu.persistent button:last-child { border-right: none; }
+  #nav-menu.persistent a:hover,
+  #nav-menu.persistent button:hover { background: rgba(255,255,255,.08); }
 
   /* ── stage ── */
   #stage {
@@ -82,7 +97,7 @@
     transform: translate(-50%, -50%);
     border-radius: 50%;
     object-fit: cover; object-position: center top;
-    border: 2.5px solid rgba(200,184,255,.55);
+    border: 2.5px solid rgba(232,228,220,0.55);
     opacity: 0;
     transition: opacity .6s ease, box-shadow .9s ease;
     z-index: 2;
@@ -90,7 +105,7 @@
   }
   #ball.active #ball-photo {
     opacity: 1;
-    box-shadow: 0 0 32px 10px rgba(200,184,255,.38), 0 0 80px 28px rgba(180,160,255,.16);
+    box-shadow: 0 0 32px 10px rgba(232,228,220,.38), 0 0 80px 28px rgba(232,228,220,.16);
   }
 
   @keyframes spin-ball {
@@ -100,7 +115,7 @@
   }
   /* ── hint text ── */
   #hint {
-    font-size: 10px; letter-spacing: .18em; color: rgba(232,228,220,0.35);
+    font-size: 10px; letter-spacing: .18em; color: rgba(232,228,220,.45);
     text-transform: uppercase; text-align: center;
     transition: opacity .5s; white-space: nowrap;
     user-select: none;
@@ -119,30 +134,41 @@
     border-radius: 18px; padding: 28px; width: min(480px, 100%);
     font-family: 'DM Mono', monospace; color: #e8e4dc;
   }
-  #try-box h2 { font-size: 13px; letter-spacing: .12em; margin-bottom: 16px; color: rgba(200,184,255,.9); }
-  #try-box label { display: block; font-size: 11px; letter-spacing: .1em; margin-bottom: 6px; color: rgba(232,228,220,.5); }
-  #try-about, #try-skills {
+  #try-box h2 { font-size: 13px; letter-spacing: .12em; margin-bottom: 16px; color: #e8e4dc; }
+  #try-box label { display: block; font-size: 11px; letter-spacing: .1em; margin-bottom: 6px; color: rgba(232,228,220,.6); }
+  #try-about, #try-skills, #try-image {
     width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
     border-radius: 8px; color: #e8e4dc; font-family: 'DM Mono', monospace; font-size: 12px;
-    padding: 10px 12px; margin-bottom: 16px; resize: vertical; outline: none; transition: border-color .2s;
+    padding: 10px 12px; margin-bottom: 16px; outline: none; transition: border-color .2s;
   }
-  #try-about:focus, #try-skills:focus { border-color: rgba(200,184,255,.5); }
+  #try-image { padding: 8px 12px; }
+  #try-about:focus, #try-skills:focus, #try-image:focus { border-color: rgba(100,220,255,.55); box-shadow: 0 0 8px rgba(0,217,255,.2); }
+  #try-about:focus, #try-skills:focus { border-color: rgba(100,220,255,.55); box-shadow: 0 0 8px rgba(0,217,255,.2); }
   #try-about { height: 72px; } #try-skills { height: 96px; }
-  .try-hint { font-size: 10px; color: rgba(232,228,220,.3); margin-top: -12px; margin-bottom: 16px; }
+  .try-hint { font-size: 10px; color: rgba(232,228,220,.35); margin-top: -12px; margin-bottom: 16px; }
   #try-actions { display: flex; gap: 10px; justify-content: flex-end; }
   #try-apply, #try-cancel {
     padding: 9px 20px; border-radius: 30px; font-family: 'DM Mono', monospace;
-    font-size: 11px; letter-spacing: .1em; cursor: pointer; border: 1px solid rgba(255,255,255,.2);
+    font-size: 11px; letter-spacing: .1em; cursor: pointer; border: 1px solid rgba(232,228,220,.2);
     transition: background .2s, border-color .2s; -webkit-tap-highlight-color: transparent;
   }
-  #try-apply { background: rgba(200,184,255,.15); color: rgba(200,184,255,.9); }
-  #try-apply:hover { background: rgba(200,184,255,.28); border-color: rgba(200,184,255,.5); }
-  #try-cancel { background: transparent; color: rgba(232,228,220,.4); }
+  #try-apply { background: rgba(232,228,220,.12); color: #e8e4dc; }
+  #try-apply:hover { background: rgba(232,228,220,.2); }
+  #try-cancel { background: transparent; color: rgba(232,228,220,.6); }
+  #try-cancel:hover { background: rgba(255,255,255,.05); }
 
   /* ── responsive: smaller on phones ── */
-  @media (max-width: 480px) {
-    #ball, #ball-disco { width: 140px; height: 140px }
-    #ball-photo { width: 108px; height: 108px; }
+  @media (max-width: 640px) {
+    #nav { top: 16px; right: 16px; left: 16px; }
+    #nav-toggle { width: 100%; padding: 10px 16px; }
+    #nav-menu { right: 16px; top: 56px; min-width: calc(100% - 32px); }
+    #try-box { width: min(100%, 100%); padding: 20px; }
+    #try-about, #try-skills, #try-image { font-size: 13px; padding: 12px 10px; }
+    #try-actions { flex-direction: column-reverse; align-items: stretch; }
+    #try-actions button { width: 100%; }
+    #stage { gap: 20px; }
+    #ball, #ball-disco { width: 140px; height: 140px; }
+    #ball-photo { width: 104px; height: 104px; }
   }
 </style>
  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -180,7 +206,9 @@
     <textarea id="try-about" placeholder="e.g. Frontend dev, coffee obsessive, Oslo 🇳🇴"></textarea>
     <label>skills & highlights (one per line)</label>
     <textarea id="try-skills" placeholder="e.g. TypeScript&#10;Vue.js&#10;🎸 Guitar&#10;📸 Photography"></textarea>
-    <p class="try-hint">tip: use emojis for personality ✦</p>
+    <label>upload an image</label>
+    <input id="try-image" type="file" accept="image/*">
+    <p class="try-hint">tip: choose a local photo and it will show on the disco</p>
     <div id="try-actions">
       <button id="try-cancel">cancel</button>
       <button id="try-apply">apply →</button>
@@ -191,11 +219,11 @@
 <div id="stage">
   <div id="ball">
     <img id="ball-disco"
-      src="images/ball-disco.png"
-      alt="disco ball"/>
+        src="assets/images/ball-disco.png"
+        alt="disco ball"/>
     <img id="ball-photo"
-      src="images/ball-photo.jpg"
-      alt="Sean"/>
+        src="assets/images/ball-photo.jpg"
+        alt="Sean"/>
   </div>
   <p id="hint">click the disco ball</p>
 </div>
@@ -218,17 +246,20 @@ window.addEventListener('resize', resize);
 
 /* ── state ── */
 let DATA = null, lang = 'en', active = false, discoAngle = 0, spots = [];
+let customImageUrl = null;
+let pendingPlay = false;
+const discoTextColors = ['#E8E4DC', '#FFFFFF', '#A8F0FF', '#71C9FF'];
 
 /* ── spot builder — golden angle, well-spaced ── */
 function buildSpots(items){
-  /* cap at 18 items max so nothing crowds */
-  const capped = items.slice(0, 18);
+  /* cap at 30 items max so nothing crowds */
+  const capped = items.slice(0, 30);
   spots = capped.map((text, i) => ({
-    text,
+    text: '✨ ' + text,
     /* spread elevation more broadly so spots don't cluster at equator */
-    phi:    (Math.PI * 0.15) + (i / capped.length) * Math.PI * 0.70,
+    phi:    (Math.PI * 0.10) + (i / capped.length) * Math.PI * 0.80,
     theta0: i * 2.399963,
-    hue:    190 + (i * 23) % 110
+    colorIndex: i % discoTextColors.length
   }));
 }
 
@@ -247,7 +278,7 @@ function project(theta, phi, r){
 /* ball radius in px (used to split front/back) */
 function ballR(){ return Math.min(W, H) * 0.10; }
 /* sphere radius — bigger = more spread */
-function sphereR(){ return Math.min(W, H) * 0.42; }
+function sphereR(){ return Math.min(W, H) * 0.45; }
 
 function drawSpot(ctx2d, s, depth){
   const alpha    = 0.28 + depth * 0.70;
@@ -256,12 +287,12 @@ function drawSpot(ctx2d, s, depth){
   const tw = ctx2d.measureText(s.text).width, pad = 8;
   ctx2d.save();
   ctx2d.globalAlpha = alpha * 0.40;
-  ctx2d.fillStyle = `hsl(${s.hue}, 40%, 12%)`;
+  ctx2d.fillStyle = 'rgba(10,10,16,0.9)';
   ctx2d.beginPath();
   ctx2d.roundRect(s.sx - tw/2 - pad, s.sy - fontSize + 2, tw + pad*2, fontSize + 6, 4);
   ctx2d.fill();
   ctx2d.globalAlpha = alpha;
-  ctx2d.fillStyle = `hsl(${s.hue}, 65%, ${55 + depth*25}%)`;
+  ctx2d.fillStyle = discoTextColors[s.colorIndex];
   ctx2d.fillText(s.text, s.sx - tw/2, s.sy);
   ctx2d.restore();
 }
@@ -326,6 +357,11 @@ function initWidget() {
   widget.bind(SC.Widget.Events.READY, () => {
     scReady = true;
     widget.setVolume(50); // 50%
+    if (pendingPlay) {
+      widget.seekTo(75000);
+      widget.play();
+      pendingPlay = false;
+    }
   });
 }
 
@@ -336,17 +372,23 @@ function toggleDisco(e) {
   hint.classList.toggle('hidden', active);
 
   if (active) {
+    if (!widget && window.SC) initWidget();
     if (scReady) {
       widget.seekTo(75000); // 1m15s in ms
       widget.setVolume(50);
       widget.play();
+    } else {
+      pendingPlay = true;
     }
   } else {
     if (scReady) widget.pause();
     discoAngle = 0;
     ctxB.clearRect(0, 0, W, H);
     ctxF.clearRect(0, 0, W, H);
-    setTimeout(() => menu.classList.add('open'), 300);
+    setTimeout(() => {
+      menu.classList.add('open');
+      menu.classList.add('persistent');
+    }, 300);
   }
 }
 ball.addEventListener('click',      toggleDisco);
@@ -355,8 +397,13 @@ ball.addEventListener('touchend',   toggleDisco, { passive: false });
 /* ── nav ── */
 const toggle = document.getElementById('nav-toggle');
 const menu   = document.getElementById('nav-menu');
-function closeMenu(){ menu.classList.remove('open'); }
-toggle.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+function closeMenu(){ if (!menu.classList.contains('persistent')) menu.classList.remove('open'); }
+toggle.addEventListener('click', e => {
+  e.stopPropagation();
+  if (!menu.classList.contains('persistent')) {
+    menu.classList.toggle('open');
+  }
+});
 document.addEventListener('click',    closeMenu);
 document.addEventListener('touchend', closeMenu);
 
@@ -377,13 +424,22 @@ tryOverlay.addEventListener('click', e => { if(e.target === tryOverlay) tryOverl
 document.getElementById('try-apply').addEventListener('click', () => {
   const about  = document.getElementById('try-about').value.trim();
   const skills = document.getElementById('try-skills').value.trim();
+  const imageFile = document.getElementById('try-image').files[0];
   const items  = [];
   if(about) items.push(about);
   skills.split('\n').forEach(l => { const t = l.trim(); if(t) items.push(t); });
   if(items.length) buildSpots(items);
-  /* swap profile photo to disco ball for the "try it" preview */
+
   const photo = document.getElementById('ball-photo');
-  photo.src = document.getElementById('ball-disco').src;
+  if(imageFile) {
+    if(customImageUrl) URL.revokeObjectURL(customImageUrl);
+    customImageUrl = URL.createObjectURL(imageFile);
+    photo.src = customImageUrl;
+  } else if (customImageUrl) {
+    photo.src = customImageUrl;
+  } else {
+    photo.src = document.getElementById('ball-disco').src;
+  }
   photo.style.borderRadius = '50%';
   photo.style.objectFit = 'contain';
   photo.style.background = '#111';

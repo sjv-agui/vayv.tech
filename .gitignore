@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# environment
+.env
+.env.local
+
+# archives & drafts
+_archive/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.claude/
+
+# logs
+*.log
+npm-debug.log*

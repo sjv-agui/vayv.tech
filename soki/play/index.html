@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>soki — round in play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Azeret+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../public/style.css" />
+  <style>
+    .play-body { min-height: 100vh; display: flex; flex-direction: column; }
+    .play-main { flex: 1; padding: 110px 24px 80px; max-width: 720px; margin: 0 auto; width: 100%; }
+    .panel { border: 1px solid rgba(255,255,255,0.12); padding: 18px; margin-bottom: 18px; }
+    .panel h3 { margin: 0 0 8px 0; font-family: 'Share Tech Mono', monospace; font-size: 14px; opacity: 0.7; }
+    .panel .label { font-family: 'Share Tech Mono', monospace; font-size: 11px; opacity: 0.5; margin-bottom: 4px; }
+    .panel .body-text { font-size: 15px; line-height: 1.55; }
+    .field { margin: 10px 0; }
+    .field label { display: block; font-size: 11px; opacity: 0.55; margin-bottom: 4px; font-family: 'Share Tech Mono', monospace; }
+    .field input, .field textarea, .field select { width: 100%; box-sizing: border-box; padding: 8px 10px; background: transparent; color: inherit; border: 1px solid rgba(255,255,255,0.18); font-family: 'Azeret Mono', monospace; font-size: 14px; }
+    .field textarea { resize: vertical; min-height: 60px; }
+    .q-row { padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 13px; }
+    .q-row:last-child { border-bottom: none; }
+    .q-row .meta { opacity: 0.55; font-size: 11px; font-family: 'Share Tech Mono', monospace; }
+    .vote-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0; }
+    .vote-card { padding:12px 14px; border:1px solid rgba(255,255,255,0.15); cursor:pointer; transition:border-color 0.12s; }
+    .vote-card:hover:not(.locked) { border-color:rgba(255,255,255,0.35); }
+    .vote-card.selected { border-color:#88ff88; box-shadow:0 0 0 1px #88ff88; }
+    .vote-card.locked { opacity:0.5; cursor:default; pointer-events:none; }
+    .vote-card-key { font-family:'Share Tech Mono',monospace; font-size:11px; opacity:0.5; display:block; margin-bottom:4px; }
+    .vote-card-text { font-size:13px; line-height:1.4; }
+    .err { color: #ff8888; font-size: 12px; margin-top: 6px; min-height: 14px; }
+    .ok { color: #88ff88; font-size: 12px; margin-top: 6px; min-height: 14px; }
+    .hidden { display: none; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 540px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── Sequence Lock top bar ── */
+    .seq-lock-bar {
+      position: fixed; top: 52px; left: 0; right: 0; z-index: 90;
+      background: #0a0a0a; border-bottom: 1px solid #1e1e1e;
+      padding: 8px 20px 10px;
+    }
+    .slb-row1 {
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    .slb-round { color: #c8505a; }
+    .slb-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      opacity: 0.55; letter-spacing: 2px; margin-bottom: 8px;
+    }
+    .slb-tiles { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .slb-caption {
+      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      color: #818181; text-align: center; margin-top: 8px; letter-spacing: 1px;
+    }
+    .seq-tile {
+      width: 78px; height: 78px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .seq-tile.unlocked {
+      border: 1px solid #c8c8c8;
+      background: linear-gradient(145deg, #2a2a2a, #6a6a6a);
+    }
+    .seq-tile.locked {
+      border: 1.5px dashed #383838;
+      background: #0a0a0a;
+    }
+    .seq-tile svg { width: 44px; height: 44px; }
+    .seq-tile.unlocked svg path { fill: #e8e8e8; stroke: #0a0a0a; stroke-width: 0.5; }
+    .seq-tile.locked  svg path { fill: none;    stroke: #383838; stroke-width: 1; }
+    .play-main { padding-top: 190px !important; }
+    @media (max-width: 540px) {
+      .seq-tile { width: 58px; height: 58px; }
+      .seq-tile svg { width: 34px; height: 34px; }
+    }
+
+    /* ── Host dashboard ── */
+    .host-count { font-family:'Share Tech Mono',monospace; font-size:12px; opacity:0.65; margin-bottom:12px; letter-spacing:1px; }
+    .host-controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+    .roster-table { width:100%; border-collapse:collapse; font-size:12px; margin:10px 0 14px; }
+    .roster-table th { font-family:'Share Tech Mono',monospace; font-size:10px; opacity:0.5; text-align:left; padding:4px 6px; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .roster-table td { padding:6px 6px; border-bottom:1px dashed rgba(255,255,255,0.06); }
+    .roster-table tr:last-child td { border-bottom:none; }
+    .mono-dim { font-family:'Share Tech Mono',monospace; font-size:10px; opacity:0.4; }
+    .hold-btn { position:relative; overflow:hidden; }
+    .hold-btn::before { content:''; position:absolute; inset:0; background:rgba(40,120,40,0.45); transform:scaleX(0); transform-origin:left; transition:none; pointer-events:none; }
+    .hold-btn.holding::before { transform:scaleX(1); transition:transform 2.5s linear; }
+
+    /* ── R3 ordering canvas ── */
+    .r3-canvas { display:flex; flex-direction:column; gap:8px; margin:12px 0; }
+    .r3-tile-card {
+      display:flex; align-items:center; gap:12px;
+      padding:10px 14px; border:1px solid rgba(255,255,255,0.14);
+      cursor:grab; background:#111; transition:opacity 0.15s, border-color 0.1s;
+      user-select:none;
+    }
+    .r3-tile-card.dragging { opacity:0.35; }
+    .r3-tile-card.drag-over { border-color:#c8505a; background:#180e0e; }
+    .r3-tile-card .tile-pos { font-family:'Share Tech Mono',monospace; font-size:11px; opacity:0.4; min-width:22px; }
+    .r3-tile-card svg { width:36px; height:36px; flex-shrink:0; }
+    .r3-tile-card svg path { fill:#e8e8e8; stroke:#0a0a0a; stroke-width:0.5; }
+    .r3-tile-card .tile-id { font-family:'Share Tech Mono',monospace; font-size:11px; opacity:0.45; }
+    .r3-group-tiles { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0; }
+    .r3-group-tile {
+      width:64px; height:64px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      border:1px solid #c8c8c8;
+      background:linear-gradient(145deg,#2a2a2a,#6a6a6a);
+    }
+    .r3-group-tile svg { width:38px; height:38px; }
+    .r3-group-tile svg path { fill:#e8e8e8; stroke:#0a0a0a; stroke-width:0.5; }
+    .r3-score { font-size:72px; font-family:'Share Tech Mono',monospace; text-align:center; margin:18px 0 6px; }
+    .r3-score.pass { color:#88ff88; }
+    .r3-score.fail { color:#c8505a; }
+    .r3-score-sub { text-align:center; opacity:0.55; font-size:13px; margin-bottom:18px; }
+    .r3-reveal { border:1px solid #4c844c; padding:16px; margin-top:16px; }
+    .r3-reveal .label { color:#88c888; }
+  </style>
+</head>
+<body class="play-body">
+
+  <!-- SVG puzzle piece defs — referenced by tiles via <use> -->
+  <svg style="display:none" aria-hidden="true">
+    <defs>
+      <symbol id="pz1"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 1 6 0 H26 V13 a3 3 0 0 1 0 6 V26 H19 a3 3 0 0 1 -6 0 H6 V19 a3 3 0 0 1 0 -6 Z"/></symbol>
+      <symbol id="pz2"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 0 6 0 H26 V13 a3 3 0 0 0 0 6 V26 H19 a3 3 0 0 0 -6 0 H6 V19 a3 3 0 0 0 0 -6 Z"/></symbol>
+      <symbol id="pz3"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 1 6 0 H26 V13 a3 3 0 0 0 0 6 V26 H19 a3 3 0 0 1 -6 0 H6 V19 a3 3 0 0 0 0 -6 Z"/></symbol>
+      <symbol id="pz4"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 0 6 0 H26 V13 a3 3 0 0 1 0 6 V26 H19 a3 3 0 0 0 -6 0 H6 V19 a3 3 0 0 1 0 -6 Z"/></symbol>
+      <symbol id="pz5"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 1 6 0 H26 V13 a3 3 0 0 1 0 6 V26 H19 a3 3 0 0 0 -6 0 H6 V19 a3 3 0 0 0 0 -6 Z"/></symbol>
+      <symbol id="pz6"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 0 6 0 H26 V13 a3 3 0 0 0 0 6 V26 H19 a3 3 0 0 1 -6 0 H6 V19 a3 3 0 0 1 0 -6 Z"/></symbol>
+      <symbol id="pz7"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 1 6 0 H26 V13 a3 3 0 0 0 0 6 V26 H19 a3 3 0 0 0 -6 0 H6 V19 a3 3 0 0 1 0 -6 Z"/></symbol>
+      <symbol id="pz8"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 0 6 0 H26 V13 a3 3 0 0 1 0 6 V26 H19 a3 3 0 0 1 -6 0 H6 V19 a3 3 0 0 0 0 -6 Z"/></symbol>
+      <symbol id="pz9"  viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 1 6 0 H26 V13 a3 3 0 0 1 0 6 V26 H19 a3 3 0 0 1 -6 0 H6 V19 a3 3 0 0 0 0 -6 Z"/></symbol>
+      <symbol id="pz10" viewBox="2 2 28 28"><path d="M6 6 H13 a3 3 0 0 1 6 0 H26 V13 a3 3 0 0 0 0 6 V26 H19 a3 3 0 0 0 -6 0 H6 V19 a3 3 0 0 0 0 -6 Z"/></symbol>
+    </defs>
+  </svg>
+
+  <nav class="nav" id="nav">
+    <a href="/soki/public/"><span class="nav-brand">soki</span></a>
+    <ul class="nav-links">
+      <li><a href="/soki/public/#realms">realms</a></li>
+      <li><a href="/soki/join/" class="nav-cta">join_</a></li>
+    </ul>
+  </nav>
+
+  <!-- Sequence Lock top bar -->
+  <div class="seq-lock-bar" id="seq-lock-bar">
+    <div class="slb-row1">
+      <span id="slb-username">@—</span>
+      <span class="slb-round" id="slb-round">ROUND — / 3</span>
+    </div>
+    <div class="slb-label">// SEQUENCE LOCK</div>
+    <div class="slb-tiles" id="slb-tiles"></div>
+    <div class="slb-caption" id="slb-caption">— / — SEQUENCES UNLOCKED</div>
+  </div>
+
+  <main class="play-main">
+
+    <!-- NO SESSION -->
+    <div id="no-session" class="panel hidden">
+      <h3>// no active session</h3>
+      <p class="body-text">no game in this browser. <a href="/soki/join/">join one_</a></p>
+    </div>
+
+    <!-- ROUND HEADER -->
+    <div id="round-panel" class="panel hidden">
+      <div class="label">// round <span id="round-num">—</span> · <span id="game-code">——</span></div>
+      <h3 id="location-name">location</h3>
+      <p class="body-text" id="location-desc"></p>
+    </div>
+
+    <!-- MY CHARACTER -->
+    <div id="me-panel" class="panel hidden">
+      <div class="label">// you are</div>
+      <h3 id="char-name">—</h3>
+      <p class="body-text" id="char-desc"></p>
+      <p class="body-text" id="char-ability" style="opacity:0.75;font-style:italic"></p>
+
+      <div id="frags-section">
+        <div class="label" style="margin-top:14px">// fragments you hold (about other characters)</div>
+        <p class="body-text" id="frags-empty" style="opacity:0.55">no fragments yet — the round hasn't started or the host hasn't dealt them.</p>
+        <div id="frags-list"></div>
+      </div>
+    </div>
+
+    <!-- CAPTAIN BALLOT (shown at R1 end) -->
+    <div id="captain-panel" class="panel hidden">
+      <div class="label">// captain election — vote for the most suspicious player in your group</div>
+      <form id="captain-form"></form>
+      <button class="btn" onclick="submitCaptainVote()">cast vote_</button>
+      <div class="err" id="captain-err"></div>
+      <div class="ok" id="captain-ok"></div>
+    </div>
+
+    <!-- RIDDLE PANEL (R2) -->
+    <div id="riddle-panel" class="panel hidden">
+      <div class="label">// riddle bundle · <span id="riddle-captain-tag"></span></div>
+      <div id="riddle-list"></div>
+      <div class="ok" id="riddle-ok"></div>
+    </div>
+
+    <!-- R3 PLAYER: group tiles -->
+    <div id="r3-player-panel" class="panel hidden">
+      <div class="label">// r3 · your group's tiles — discuss the order with your group</div>
+      <div class="r3-group-tiles" id="r3-group-tiles"></div>
+      <p class="body-text" id="r3-player-status" style="opacity:0.55">waiting for host to lock the final order<span class="blink">_</span></p>
+    </div>
+
+    <!-- R3 HOST: drag-to-order canvas -->
+    <div id="r3-host-panel" class="panel hidden">
+      <div class="label">// r3 · drag tiles into the correct chronological order</div>
+      <div class="r3-canvas" id="r3-canvas"></div>
+      <button class="btn" onclick="submitR3Order()">lock order_</button>
+      <div class="err" id="r3-order-err"></div>
+    </div>
+
+    <!-- R3 RESULT -->
+    <div id="r3-result-panel" class="panel hidden">
+      <div class="label">// final score</div>
+      <div class="r3-score" id="r3-score-pct">—%</div>
+      <div class="r3-score-sub" id="r3-score-sub"></div>
+      <div id="r3-reveal" class="r3-reveal hidden">
+        <div class="label">// the truth — killer path revealed</div>
+        <p class="body-text" id="r3-reveal-text"></p>
+      </div>
+      <div id="lead-form-section" style="margin-top:28px">
+        <div class="label">// before you go — optional</div>
+        <div class="field"><label>email</label><input type="email" id="lc-email" placeholder="you@example.com"/></div>
+        <div class="field"><label>name</label><input type="text" id="lc-name" placeholder="your name"/></div>
+        <div class="field"><label>who would you bring next time?</label><input type="text" id="lc-who" placeholder="friends, colleagues, partner..."/></div>
+        <div class="field"><label>comment</label><textarea id="lc-comment" placeholder="any thoughts..."></textarea></div>
+        <button class="btn dim" onclick="submitLeadCapture()">send feedback_</button>
+        <div class="ok" id="lc-ok"></div>
+        <div class="err" id="lc-err"></div>
+      </div>
+    </div>
+
+    <!-- VOTE -->
+    <div id="vote-panel" class="panel hidden">
+      <div class="label">// answer this...</div>
+      <p class="body-text" id="vote-text"></p>
+      <div id="vote-form"></div>
+      <button class="btn" onclick="submitVote()">submit vote_</button>
+      <div class="err" id="vote-err"></div>
+      <div class="ok" id="vote-ok"></div>
+    </div>
+
+    <!-- HOST DASHBOARD -->
+    <div id="host-panel" class="panel hidden">
+      <div class="host-count" id="host-count">// — of — players</div>
+      <button class="btn dim" id="roster-toggle" onclick="toggleRoster()">show roster ▾</button>
+      <div id="roster-table-wrap" class="hidden">
+        <table class="roster-table">
+          <thead><tr><th>username</th><th>player_id</th><th>character</th></tr></thead>
+          <tbody id="roster-tbody"></tbody>
+        </table>
+      </div>
+      <div class="host-controls">
+        <button class="btn hold-btn" data-action="endRound">end round_</button>
+        <button class="btn hold-btn" data-action="startNextRound">next round_</button>
+        <button class="btn dim hold-btn" data-action="pauseGame">pause_</button>
+        <button class="btn dim hold-btn" data-action="restartRound">restart_</button>
+        <button class="btn dim hold-btn" data-action="swapPlayer">swap_</button>
+      </div>
+      <div class="err" id="host-err"></div>
+      <div style="margin-top:24px;padding-top:16px;border-top:1px dashed rgba(255,255,255,0.1)">
+        <button class="btn dim" style="opacity:0.5;font-size:12px" onclick="resetSession()">reset session_</button>
+        <div class="err" id="reset-err"></div>
+      </div>
+    </div>
+
+    <!-- PLAYER: WAITING FOR HOST -->
+    <div id="wait-panel" class="panel hidden">
+      <div class="label">// waiting</div>
+      <p class="body-text">waiting for host to start the round<span class="blink">_</span></p>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span class="footer-brand">soki v20.26.1</span>
+    <div class="footer-links"><a href="/soki/public/">home</a></div>
+    <span class="footer-status">phase: play</span>
+  </footer>
+
+  <script>
+    const API = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      ? 'http://localhost:3000'
+      : 'https://soki-api.vayv.tech';
+
+    const SESSION_KEY = 'soki_s';
+    const POLL_MS = 2500;
+
+    let state = {
+      sessionCode: null,
+      playerId: null,
+      isHost: false,
+      roundNumber: null,
+      voteQuestionId: null,
+      voteSelected: null,
+      voteLocked: false,
+      players: [],
+      pollT: null,
+      r3Tiles: [],
+      r3Submitted: false,
+    };
+
+    // ─── boot ──────────────────────────
+    function boot() {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return show('no-session');
+      try {
+        const s = JSON.parse(raw);
+        state.sessionCode = s.c;
+        state.playerId = s.p;
+        state.isHost = !!s.h;
+      } catch { return show('no-session'); }
+      if (!state.sessionCode || !state.playerId) return show('no-session');
+      if (state.isHost) {
+        show('host-panel');
+        initHoldButtons();
+      } else {
+        show('round-panel', 'me-panel');
+      }
+      tick();
+      state.pollT = setInterval(tick, POLL_MS);
+    }
+    function show(...ids) { ids.forEach(id => document.getElementById(id).classList.remove('hidden')); }
+    function hide(...ids) { ids.forEach(id => document.getElementById(id).classList.add('hidden')); }
+
+    // ─── tick ──────────────────────────
+    async function tick() {
+      try {
+        const r = await fetch(`${API}/api/games/${state.sessionCode}/round`);
+        if (r.status === 404) {
+          document.getElementById('round-num').textContent = '—';
+          document.getElementById('location-name').textContent = '(no active round)';
+          document.getElementById('location-desc').textContent = '';
+          hide('vote-panel');
+          if (!state.isHost) show('wait-panel');
+          return;
+        }
+        hide('wait-panel');
+        const data = await r.json();
+        const newRoundNumber = data.round.round_number;
+        if (newRoundNumber !== state.roundNumber) {
+          state.voteSelected = null;
+          state.voteLocked = false;
+        }
+        state.roundNumber = newRoundNumber;
+        state.currentPhase = data.round.current_phase || 'voting';
+        state.players = data.assignments;
+        document.getElementById('game-code').textContent = state.sessionCode;
+        document.getElementById('round-num').textContent = state.roundNumber;
+        if (!state.isHost) {
+          if (state.roundNumber === 2) {
+            document.getElementById('location-name').textContent = data.round.location.name;
+            document.getElementById('location-desc').textContent = data.round.location.description || '';
+            show('round-panel');
+          } else {
+            hide('round-panel');
+          }
+        }
+        applyPhase(state.currentPhase);
+      } catch (e) { /* network blip */ }
+
+      // me — character + fragments (players only)
+      if (!state.isHost) try {
+        const r = await fetch(`${API}/api/games/${state.sessionCode}/round/me?player_id=${state.playerId}`);
+        if (r.ok) {
+          const me = await r.json();
+          const c = me.character || {};
+          document.getElementById('char-name').textContent = c.name || '—';
+          document.getElementById('char-desc').textContent = c.description || '';
+          document.getElementById('char-ability').textContent = c.special_ability ? `ability: ${c.special_ability}` : '';
+
+          const fragsSection = document.getElementById('frags-section');
+          if (state.roundNumber === 1) {
+            fragsSection.classList.remove('hidden');
+            const fragsListEl = document.getElementById('frags-list');
+            const fragsEmptyEl = document.getElementById('frags-empty');
+            const frags = me.fragments_held || [];
+            if (!frags.length) {
+              fragsListEl.innerHTML = '';
+              fragsEmptyEl.style.display = '';
+            } else {
+              fragsEmptyEl.style.display = 'none';
+              fragsListEl.innerHTML = frags.map((f, i) => `
+                <div class="q-row">
+                  <div class="meta">// fragment ${i + 1}</div>
+                  <div>${escapeHtml(f.content)}</div>
+                </div>
+              `).join('');
+            }
+          } else {
+            fragsSection.classList.add('hidden');
+          }
+        }
+      } catch {}
+
+      // sequence lock top bar
+      try { await fetchSequenceLock(); } catch {}
+
+      // R2 riddle + captain state
+      if (state.roundNumber === 2) {
+        try { await fetchR2State(); } catch {}
+      }
+
+      // R3 ordering state
+      if (state.roundNumber === 3) {
+        try { await fetchR3State(); } catch {}
+      }
+
+      // vote question — players only
+      if (!state.isHost) {
+        const phaseMap = { 1: 'pre_game', 2: 'post_round_1', 3: 'post_round_2' };
+        const phase = phaseMap[state.roundNumber];
+        if (phase) {
+          try {
+            const r = await fetch(`${API}/api/games/${state.sessionCode}/vote-questions/${phase}`);
+            if (r.ok) {
+              const vq = await r.json();
+              state.voteQuestionId = vq.vote_question_id;
+              document.getElementById('vote-text').textContent = vq.question_text;
+              renderVoteOptions(vq);
+            }
+          } catch {}
+        }
+      }
+
+      // host: roster
+      if (state.isHost) {
+        try { await fetchRoster(); } catch {}
+      }
+    }
+
+    function applyPhase(phase) {
+      if (!state.isHost && phase === 'voting') show('vote-panel');
+      else hide('vote-panel');
+    }
+
+    function renderVoteOptions(vq) {
+      const wrap = document.getElementById('vote-form');
+      wrap.innerHTML = `<div class="vote-grid">${['a','b','c','d'].map(k => `
+        <div class="vote-card${state.voteSelected===k?' selected':''}${state.voteLocked?' locked':''}" data-opt="${k}" onclick="selectVoteOption('${k}')">
+          <span class="vote-card-key">${k.toUpperCase()}</span>
+          <span class="vote-card-text">${escapeHtml(vq['option_'+k])}</span>
+        </div>`).join('')}</div>`;
+    }
+
+    function selectVoteOption(k) {
+      if (state.voteLocked) return;
+      state.voteSelected = k;
+      document.querySelectorAll('.vote-card').forEach(el => {
+        el.classList.toggle('selected', el.dataset.opt === k);
+      });
+    }
+
+    // ─── actions ──────────────────────────
+    async function submitVote() {
+      const err = document.getElementById('vote-err');
+      const ok = document.getElementById('vote-ok');
+      err.textContent = ''; ok.textContent = '';
+      if (!state.voteSelected) { err.textContent = 'pick an option'; return; }
+      if (!state.voteQuestionId) { err.textContent = 'no active vote question'; return; }
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/vote`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ player_id: state.playerId, vote_question_id: state.voteQuestionId, selected_option: state.voteSelected })
+      });
+      const lock = () => {
+        state.voteLocked = true;
+        document.querySelectorAll('.vote-card').forEach(el => el.classList.add('locked'));
+      };
+      if (r.status === 409) { lock(); ok.textContent = 'already voted (locked in)'; return; }
+      if (!r.ok) { const d = await r.json().catch(()=>({})); err.textContent = d.error || 'failed'; return; }
+      lock();
+      ok.textContent = 'vote recorded_';
+    }
+
+    async function endRound() {
+      const err = document.getElementById('host-err');
+      err.textContent = '';
+      const body = { player_id: state.playerId };
+      if (state.voteQuestionId) body.vote_question_id = state.voteQuestionId;
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/round/end`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+      });
+      const d = await r.json().catch(()=>({}));
+      if (!r.ok) { err.textContent = d.error || 'failed'; return; }
+      tick();
+    }
+
+    async function startNextRound() {
+      const err = document.getElementById('host-err');
+      err.textContent = '';
+      if (state.roundNumber === 2) {
+        const r = await fetch(`${API}/api/games/${state.sessionCode}/round/3/start`, {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ player_id: state.playerId })
+        });
+        const d = await r.json().catch(()=>({}));
+        if (!r.ok) { err.textContent = d.error || 'failed'; return; }
+        tick();
+        return;
+      }
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/round/start`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ player_id: state.playerId })
+      });
+      const d = await r.json().catch(()=>({}));
+      if (!r.ok) { err.textContent = d.error || 'failed'; return; }
+      tick();
+    }
+
+    async function pauseGame() {
+      document.getElementById('host-err').textContent = '(pause — phase 7 endpoint pending)';
+    }
+    async function restartRound() {
+      document.getElementById('host-err').textContent = '(restart — phase 7 endpoint pending)';
+    }
+    async function swapPlayer() {
+      document.getElementById('host-err').textContent = '(swap — phase 7 endpoint pending)';
+    }
+
+    // ─── hold-to-activate ──────────────────────────
+    function initHoldButtons() {
+      document.querySelectorAll('.hold-btn').forEach(btn => {
+        let timer = null;
+        function start(e) {
+          e.preventDefault();
+          btn.classList.add('holding');
+          timer = setTimeout(() => {
+            btn.classList.remove('holding');
+            timer = null;
+            const fn = { endRound, startNextRound, pauseGame, restartRound, swapPlayer }[btn.dataset.action];
+            if (fn) fn();
+          }, 2500);
+        }
+        function cancel() {
+          if (timer) { clearTimeout(timer); timer = null; }
+          btn.classList.remove('holding');
+        }
+        btn.addEventListener('pointerdown', start);
+        btn.addEventListener('pointerup', cancel);
+        btn.addEventListener('pointerleave', cancel);
+        btn.addEventListener('pointercancel', cancel);
+      });
+    }
+
+    // ─── roster ──────────────────────────
+    function toggleRoster() {
+      const wrap = document.getElementById('roster-table-wrap');
+      const btn = document.getElementById('roster-toggle');
+      if (wrap.classList.contains('hidden')) {
+        wrap.classList.remove('hidden');
+        btn.textContent = 'hide roster ▴';
+      } else {
+        wrap.classList.add('hidden');
+        btn.textContent = 'show roster ▾';
+      }
+    }
+
+    async function fetchRoster() {
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/roster`);
+      if (!r.ok) return;
+      const { players } = await r.json();
+      const nonHost = players.filter(p => !p.is_host);
+      const connected = nonHost.filter(p => p.is_connected !== false).length;
+      document.getElementById('host-count').textContent = `// ${connected} of ${nonHost.length} players`;
+      const charMap = {};
+      (state.players || []).forEach(p => { charMap[p.player_id] = p.character_name; });
+      document.getElementById('roster-tbody').innerHTML = nonHost.map(p => `
+        <tr>
+          <td>${escapeHtml(p.username)}</td>
+          <td class="mono-dim">${p.player_id.slice(-8)}</td>
+          <td>${escapeHtml(charMap[p.player_id] || '—')}</td>
+        </tr>`).join('');
+    }
+
+    // ─── R3 ordering ──────────────────────────
+    async function fetchR3State() {
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/r3?player_id=${state.playerId}`);
+      if (!r.ok) return;
+      const { tiles, result, ordering, reveal } = await r.json();
+
+      if (result) {
+        hide('r3-player-panel', 'r3-host-panel');
+        const pct = result.score_percent;
+        const el = document.getElementById('r3-score-pct');
+        el.textContent = `${pct}%`;
+        el.className = 'r3-score ' + (pct >= 85 ? 'pass' : 'fail');
+        document.getElementById('r3-score-sub').textContent =
+          pct >= 85 ? 'threshold met — sequence confirmed' : 'below threshold — sequence disputed';
+        if (reveal) {
+          document.getElementById('r3-reveal-text').textContent = reveal;
+          show('r3-reveal');
+        }
+        if (state.isHost) hide('lead-form-section');
+        else show('lead-form-section');
+        show('r3-result-panel');
+        return;
+      }
+
+      hide('r3-result-panel');
+
+      if (state.isHost) {
+        hide('r3-player-panel');
+        if (!state.r3Submitted && state.r3Tiles.length === 0) {
+          state.r3Tiles = tiles.slice();
+        }
+        renderR3Canvas();
+        show('r3-host-panel');
+      } else {
+        hide('r3-host-panel');
+        document.getElementById('r3-group-tiles').innerHTML = tiles.map(t => `
+          <div class="r3-group-tile">
+            <svg aria-hidden="true"><use href="#pz${t.puzzle_piece_index}"/></svg>
+          </div>`).join('');
+        show('r3-player-panel');
+      }
+    }
+
+    function renderR3Canvas() {
+      const canvas = document.getElementById('r3-canvas');
+      const groupLabels = {};
+      let labelIdx = 0;
+      for (const t of state.r3Tiles) {
+        if (t.assigned_to_group_id && !(t.assigned_to_group_id in groupLabels))
+          groupLabels[t.assigned_to_group_id] = String.fromCharCode(65 + labelIdx++);
+      }
+      canvas.innerHTML = state.r3Tiles.map((t, i) => {
+        const grp = t.assigned_to_group_id ? groupLabels[t.assigned_to_group_id] : '?';
+        return `<div class="r3-tile-card" draggable="true" data-idx="${i}">
+          <span class="tile-pos">${i + 1}.</span>
+          <svg aria-hidden="true"><use href="#pz${t.puzzle_piece_index}"/></svg>
+          <span class="tile-id">tile ${t.puzzle_piece_index} · grp ${grp}</span>
+        </div>`;
+      }).join('');
+
+      let dragFrom = null;
+      canvas.querySelectorAll('.r3-tile-card').forEach(card => {
+        card.addEventListener('dragstart', e => {
+          dragFrom = +card.dataset.idx;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+        card.addEventListener('dragover', e => {
+          e.preventDefault();
+          canvas.querySelectorAll('.r3-tile-card').forEach(c => c.classList.remove('drag-over'));
+          card.classList.add('drag-over');
+        });
+        card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+        card.addEventListener('drop', e => {
+          e.preventDefault();
+          const to = +card.dataset.idx;
+          if (dragFrom !== null && dragFrom !== to) {
+            const moved = state.r3Tiles.splice(dragFrom, 1)[0];
+            state.r3Tiles.splice(to, 0, moved);
+            renderR3Canvas();
+          }
+          dragFrom = null;
+        });
+      });
+    }
+
+    async function submitR3Order() {
+      const err = document.getElementById('r3-order-err');
+      err.textContent = '';
+      const ordered_unlock_ids = state.r3Tiles.map(t => t.unlock_id);
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/round/3/order`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ player_id: state.playerId, ordered_unlock_ids })
+      });
+      const d = await r.json().catch(()=>({}));
+      if (!r.ok) { err.textContent = d.error || 'failed'; return; }
+      state.r3Submitted = true;
+      tick();
+    }
+
+    async function submitLeadCapture() {
+      const ok  = document.getElementById('lc-ok');
+      const err = document.getElementById('lc-err');
+      ok.textContent = ''; err.textContent = '';
+      const email = document.getElementById('lc-email').value.trim();
+      if (!email) { err.textContent = 'email is required'; return; }
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/lead-capture`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          player_id: state.playerId,
+          email,
+          name: document.getElementById('lc-name').value.trim() || undefined,
+          would_recommend_to_who: document.getElementById('lc-who').value.trim() || undefined,
+          comment: document.getElementById('lc-comment').value.trim() || undefined,
+        })
+      });
+      if (!r.ok) { const d = await r.json().catch(()=>({})); err.textContent = d.error || 'failed'; return; }
+      ok.textContent = 'thanks — see you next time_';
+    }
+
+    async function fetchR2State() {
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/round/2?player_id=${state.playerId}`);
+      if (!r.ok) { hide('captain-panel', 'riddle-panel'); return; }
+      const { groups } = await r.json();
+      const mine = groups[0];
+      if (!mine) return;
+
+      state.captainId = mine.captain_player_id;
+      const isCaptain = mine.captain_player_id === state.playerId;
+
+      if (!mine.captain_player_id) {
+        await renderCaptainBallot();
+        show('captain-panel');
+        hide('riddle-panel');
+        return;
+      }
+      hide('captain-panel');
+
+      const tag = isCaptain ? '// you are captain_' : `// captain: ${mine.captain_player_id.slice(-6)}`;
+      document.getElementById('riddle-captain-tag').textContent = tag;
+      renderRiddles(mine, isCaptain);
+      show('riddle-panel');
+    }
+
+    async function renderCaptainBallot() {
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/groups`);
+      if (!r.ok) return;
+      const { groups } = await r.json();
+      const myGroup = groups.find(g => g.member_ids.includes(state.playerId));
+      if (!myGroup) return;
+
+      const members = state.players.filter(p => myGroup.member_ids.includes(p.player_id) && p.player_id !== state.playerId);
+      document.getElementById('captain-form').innerHTML = members.map(p => `
+        <label class="vote-opt">
+          <input type="radio" name="cap" value="${p.player_id}"/>
+          ${escapeHtml(p.username)} <span class="meta">(as ${escapeHtml(p.character_name)})</span>
+        </label>
+      `).join('');
+    }
+
+    function renderRiddles(assignment, isCaptain) {
+      const list = document.getElementById('riddle-list');
+      const allDone = assignment.riddles.every(r => r.answered);
+      if (allDone) {
+        document.getElementById('riddle-ok').textContent = 'bundle complete_';
+      }
+      list.innerHTML = assignment.riddles.map((r, i) => {
+        const opts = ['a','b','c','d'].map(k => `
+          <label class="vote-opt" style="${r.answered ? 'opacity:0.5;pointer-events:none' : ''}">
+            <input type="radio" name="rid_${r.riddle_id}" value="${k}" ${r.answered && r.selected_option===k ? 'checked' : ''} ${!isCaptain || r.answered ? 'disabled' : ''}/>
+            <strong>${k.toUpperCase()}.</strong> ${escapeHtml(r.options[k] || '')}
+          </label>
+        `).join('');
+        const status = r.answered ? `<span class="ok" style="font-size:11px">locked${r.is_correct === true ? ' ✓' : ''}</span>` : '';
+        return `
+          <div class="panel" style="margin-bottom:10px;padding:14px">
+            <div class="label">// riddle ${i+1} ${status}</div>
+            <p class="body-text">${escapeHtml(r.question_text)}</p>
+            <form id="riddle-form-${r.riddle_id}">${opts}</form>
+            ${isCaptain && !r.answered ? `<button class="btn dim" style="margin-top:6px;font-size:12px" onclick="submitRiddleAnswer('${assignment.assignment_id}','${r.riddle_id}')">lock answer_</button>` : ''}
+            <div class="err" id="riddle-err-${r.riddle_id}"></div>
+          </div>`;
+      }).join('');
+    }
+
+    async function submitCaptainVote() {
+      const sel = document.querySelector('#captain-form input:checked');
+      const err = document.getElementById('captain-err');
+      const ok  = document.getElementById('captain-ok');
+      err.textContent = ''; ok.textContent = '';
+      if (!sel) { err.textContent = 'pick a player'; return; }
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/captain-vote`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ voter_player_id: state.playerId, voted_player_id: sel.value })
+      });
+      const d = await r.json().catch(()=>({}));
+      if (!r.ok) { err.textContent = d.error || 'failed'; return; }
+      ok.textContent = d.captain_elected ? `captain elected_` : `vote cast (${d.votes_cast}/${d.members})`;
+    }
+
+    async function submitRiddleAnswer(assignmentId, riddleId) {
+      const sel = document.querySelector(`#riddle-form-${riddleId} input:checked`);
+      const err = document.getElementById(`riddle-err-${riddleId}`);
+      if (err) err.textContent = '';
+      if (!sel) { if (err) err.textContent = 'pick an option'; return; }
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/riddle-answer`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ player_id: state.playerId, assignment_id: assignmentId, riddle_id: riddleId, selected_option: sel.value })
+      });
+      const d = await r.json().catch(()=>({}));
+      if (!r.ok) { if (err) err.textContent = d.error || 'failed'; return; }
+      tick();
+    }
+
+    async function fetchSequenceLock() {
+      const r = await fetch(`${API}/api/games/${state.sessionCode}/sequence-lock`);
+      if (!r.ok) return;
+      const { total_tiles, unlocked } = await r.json();
+
+      const me = state.players.find(p => p.player_id === state.playerId);
+      const uLabel = me ? `@${me.username}${state.isHost ? ' · HOST' : ''}` : '@—';
+      document.getElementById('slb-username').textContent = uLabel;
+      document.getElementById('slb-round').textContent =
+        state.roundNumber ? `ROUND ${state.roundNumber} / 3` : 'ROUND — / 3';
+
+      const tilesEl = document.getElementById('slb-tiles');
+      tilesEl.innerHTML = Array.from({ length: total_tiles }, (_, i) => {
+        const piece = unlocked[i];
+        if (piece) {
+          const idx = piece.puzzle_piece_index;
+          return `<div class="seq-tile unlocked" title="unlocked · round ${piece.round_number}">
+            <svg aria-hidden="true"><use href="#pz${idx}"/></svg>
+          </div>`;
+        }
+        return `<div class="seq-tile locked">
+          <svg aria-hidden="true"><use href="#pz1"/></svg>
+        </div>`;
+      }).join('');
+
+      document.getElementById('slb-caption').textContent =
+        `${unlocked.length} / ${total_tiles} SEQUENCES UNLOCKED`;
+    }
+
+    async function resetSession() {
+      const err = document.getElementById('reset-err');
+      err.textContent = '';
+      if (!confirm('Reset entire session? This wipes all games and players.')) return;
+      const r = await fetch(`${API}/api/admin/reset`, { method: 'POST' });
+      if (!r.ok) { err.textContent = 'reset failed (demo mode only)'; return; }
+      localStorage.removeItem(SESSION_KEY);
+      window.location.href = '../join/';
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    boot();
+  </script>
+</body>
+</html>

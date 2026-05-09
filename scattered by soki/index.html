@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scattered — A Murder Mystery at Akershus Fortress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&family=Courier+Prime:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #080808;
+      --deep: #0d0d0d;
+      --surface: #141414;
+      --card: #1a1a1a;
+      --border: #2a2a2a;
+      --red: #c0392b;
+      --red-dim: #8b1a11;
+      --red-glow: rgba(192, 57, 43, 0.15);
+      --gold: #c9a84c;
+      --gold-dim: rgba(201, 168, 76, 0.3);
+      --white: #f5f0eb;
+      --grey: #888880;
+      --light-grey: #bbb8b3;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.95), transparent);
+      backdrop-filter: blur(2px);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      letter-spacing: 0.05em;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .nav-cta {
+      background: var(--red);
+      color: var(--white);
+      padding: 10px 24px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: background 0.2s;
+    }
+
+    .nav-cta:hover { background: #a93226; }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+      background: var(--black);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 60%, rgba(192, 57, 43, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 80% at 50% 100%, rgba(8,8,8,1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 28px;
+      position: relative;
+    }
+
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '—';
+      margin: 0 12px;
+      color: var(--red-dim);
+    }
+
+    h1.hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .hero-title span.red { color: var(--red); }
+
+    .hero-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-style: italic;
+      color: var(--grey);
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .hero-location {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .hero-desc {
+      max-width: 540px;
+      font-size: 1rem;
+      color: var(--light-grey);
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+      padding: 16px 40px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { background: #a93226; transform: translateY(-1px); }
+
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--grey);
+      padding: 16px 40px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn-ghost:hover { border-color: var(--grey); color: var(--white); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--border);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, transparent, var(--border));
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section {
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-full {
+      max-width: 100%;
+      padding: 100px 0;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    h2.section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      color: var(--white);
+    }
+
+    h2.section-title em {
+      font-style: italic;
+      color: var(--grey);
+    }
+
+    .section-body {
+      color: var(--light-grey);
+      font-size: 1rem;
+      max-width: 600px;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ─── WHAT'S INCLUDED ─── */
+    #included {
+      background: var(--deep);
+    }
+
+    .included-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 64px;
+    }
+
+    .included-item {
+      background: var(--surface);
+      padding: 40px 36px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      transition: background 0.2s;
+    }
+
+    .included-item:hover { background: var(--card); }
+
+    .included-icon {
+      font-size: 1.4rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .included-item h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+      color: var(--white);
+    }
+
+    .included-item p {
+      font-size: 0.875rem;
+      color: var(--grey);
+      line-height: 1.6;
+    }
+
+    /* ─── WHY CHOOSE ─── */
+    #why {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .why-list {
+      list-style: none;
+      margin-top: 40px;
+    }
+
+    .why-list li {
+      display: flex;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .why-list li:first-child { border-top: 1px solid var(--border); }
+
+    .why-num {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      color: var(--red);
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .why-list h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .why-list p {
+      font-size: 0.875rem;
+      color: var(--grey);
+    }
+
+    .why-quote {
+      background: var(--surface);
+      border-left: 3px solid var(--red);
+      padding: 40px 36px;
+    }
+
+    .why-quote blockquote {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .why-quote cite {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--grey);
+      font-style: normal;
+    }
+
+    /* ─── STORYLINE ─── */
+    #storyline {
+      background: var(--surface);
+      padding: 100px 0;
+    }
+
+    .story-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .story-text { }
+
+    .story-text p {
+      font-size: 1rem;
+      color: var(--light-grey);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .story-fragment {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 32px;
+      position: relative;
+    }
+
+    .story-fragment::before {
+      content: 'FRAGMENT — T3';
+      display: block;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+
+    .story-fragment blockquote {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--light-grey);
+      font-style: italic;
+    }
+
+    .story-fragment .truth-badge {
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      background: var(--red);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      color: var(--white);
+    }
+
+    .fragment-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .fragment-false {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 24px 28px;
+      position: relative;
+      opacity: 0.7;
+    }
+
+    .fragment-false::before {
+      content: 'FRAGMENT — S2';
+      display: block;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--grey);
+      margin-bottom: 10px;
+    }
+
+    .fragment-false blockquote {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--grey);
+      font-style: italic;
+    }
+
+    .soki-badge {
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      background: var(--border);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      color: var(--grey);
+    }
+
+    .fragment-question {
+      text-align: center;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      color: var(--grey);
+      letter-spacing: 0.1em;
+      padding: 12px;
+      border: 1px dashed var(--border);
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    #how {
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0;
+      margin-top: 64px;
+      border: 1px solid var(--border);
+    }
+
+    .step {
+      padding: 40px 32px;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+
+    .step:last-child { border-right: none; }
+
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .step h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--grey);
+      line-height: 1.6;
+    }
+
+    .step-connector {
+      position: absolute;
+      top: 44px;
+      right: -13px;
+      width: 24px;
+      height: 24px;
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      color: var(--red);
+      z-index: 1;
+    }
+
+    /* ─── WHO ─── */
+    #who {
+      background: var(--deep);
+      padding: 100px 0;
+    }
+
+    .who-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+
+    .who-card {
+      padding: 40px;
+      border: 1px solid var(--border);
+    }
+
+    .who-card.yes { border-color: rgba(192,57,43,0.3); background: rgba(192,57,43,0.03); }
+    .who-card.no { background: var(--surface); }
+
+    .who-card-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .yes .who-card-label { color: var(--red); }
+    .no .who-card-label { color: var(--grey); }
+
+    .who-card ul {
+      list-style: none;
+    }
+
+    .who-card ul li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--light-grey);
+    }
+
+    .who-card ul li:last-child { border-bottom: none; }
+
+    .who-card ul li .mark { flex-shrink: 0; font-size: 0.8rem; }
+    .yes .mark { color: var(--red); }
+    .no .mark { color: var(--grey); }
+
+    /* ─── PRICING ─── */
+    #pricing {
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .pricing-card {
+      border: 1px solid var(--border);
+      padding: 48px 40px;
+      text-align: left;
+      background: var(--surface);
+      transition: border-color 0.2s;
+    }
+
+    .pricing-card:hover { border-color: rgba(192,57,43,0.4); }
+
+    .pricing-card.featured {
+      border-color: var(--red);
+      background: var(--card);
+      position: relative;
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -12px;
+      left: 40px;
+      background: var(--red);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+    }
+
+    .pricing-tier {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .pricing-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .pricing-price span {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--grey);
+    }
+
+    .pricing-note {
+      font-size: 0.8rem;
+      color: var(--grey);
+      margin-bottom: 32px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 36px;
+    }
+
+    .pricing-features li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+      color: var(--light-grey);
+      display: flex;
+      gap: 10px;
+    }
+
+    .pricing-features li .check { color: var(--red); flex-shrink: 0; }
+
+    .btn-book {
+      display: block;
+      text-align: center;
+      background: var(--red);
+      color: var(--white);
+      padding: 14px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: background 0.2s;
+    }
+
+    .btn-book:hover { background: #a93226; }
+
+    .btn-book-ghost {
+      display: block;
+      text-align: center;
+      border: 1px solid var(--border);
+      color: var(--grey);
+      padding: 14px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .btn-book-ghost:hover { border-color: var(--grey); color: var(--white); }
+
+    .pricing-trust {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: var(--grey);
+      letter-spacing: 0.05em;
+    }
+
+    .pricing-trust span { display: flex; align-items: center; gap: 6px; }
+
+    /* ─── FAQ ─── */
+    #faq {
+      background: var(--deep);
+      padding: 100px 0;
+    }
+
+    .faq-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .faq-list {
+      margin-top: 56px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      color: var(--white);
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      text-align: left;
+      gap: 20px;
+    }
+
+    .faq-toggle {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--red);
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+
+    .faq-item.open .faq-toggle { transform: rotate(45deg); }
+
+    .faq-answer {
+      display: none;
+      padding-bottom: 24px;
+      font-size: 0.9rem;
+      color: var(--grey);
+      line-height: 1.8;
+    }
+
+    .faq-item.open .faq-answer { display: block; }
+
+    /* ─── GALLERY ─── */
+    #gallery {
+      padding: 100px 0;
+    }
+
+    .gallery-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 200px 200px;
+      gap: 4px;
+      margin-top: 56px;
+    }
+
+    .gallery-cell {
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gallery-cell.tall { grid-row: span 2; }
+
+    .gallery-cell-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .gallery-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, var(--surface) 0%, var(--card) 100%);
+    }
+
+    .gallery-placeholder .gallery-icon {
+      font-size: 2rem;
+      opacity: 0.4;
+    }
+
+    .gallery-placeholder .gallery-text {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--grey);
+      opacity: 0.6;
+    }
+
+    /* Gallery atmosphere overlays */
+    .cell-fortress { background: linear-gradient(160deg, #1a1510 0%, #0d0b08 100%); }
+    .cell-dark { background: linear-gradient(160deg, #10100d 0%, #0a0a0a 100%); }
+    .cell-red { background: linear-gradient(160deg, #1a0a08 0%, #100808 100%); }
+
+    .atmo-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.15);
+      text-align: center;
+      padding: 24px;
+      line-height: 1.6;
+    }
+
+    /* ─── TESTIMONIALS ─── */
+    #testimonials {
+      background: var(--surface);
+      padding: 100px 0;
+    }
+
+    .testimonials-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 56px;
+    }
+
+    .testimonial-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 36px 32px;
+    }
+
+    .testimonial-stars {
+      color: var(--gold);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-card blockquote {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-style: italic;
+      line-height: 1.7;
+      color: var(--light-grey);
+      margin-bottom: 24px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--grey);
+    }
+
+    .author-info .name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .author-info .origin {
+      font-size: 0.75rem;
+      color: var(--grey);
+    }
+
+    .press-strip {
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .press-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .press-names {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .press-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--border);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── TRUST BADGES ─── */
+    #trust {
+      padding: 60px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .trust-grid {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .trust-badge-icon { font-size: 1.3rem; }
+
+    .trust-badge-text .badge-title {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .trust-badge-text .badge-sub {
+      font-size: 0.7rem;
+      color: var(--grey);
+    }
+
+    /* ─── FINAL CTA ─── */
+    #final-cta {
+      background: var(--surface);
+      text-align: center;
+      padding: 120px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #final-cta .bg-accent {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 100%, rgba(192,57,43,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    #final-cta h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      max-width: 700px;
+      margin: 0 auto 16px;
+      position: relative;
+    }
+
+    #final-cta h2 em {
+      font-style: italic;
+      color: var(--grey);
+    }
+
+    #final-cta .cta-sub {
+      font-size: 1rem;
+      color: var(--grey);
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    #final-cta .urgency {
+      display: inline-block;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      padding: 6px 16px;
+      border: 1px solid rgba(192,57,43,0.3);
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+      padding: 60px 24px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    .footer-tagline {
+      font-size: 0.85rem;
+      color: var(--grey);
+      margin-bottom: 24px;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-link {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--grey);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .social-link:hover { border-color: var(--grey); color: var(--white); }
+
+    .footer-col h4 {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 20px;
+    }
+
+    .footer-col ul { list-style: none; }
+
+    .footer-col ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-col ul li a {
+      font-size: 0.875rem;
+      color: var(--grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover { color: var(--white); }
+
+    .newsletter-form {
+      display: flex;
+      gap: 0;
+      margin-top: 12px;
+    }
+
+    .newsletter-form input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-right: none;
+      padding: 10px 14px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    .newsletter-form input::placeholder { color: var(--grey); }
+
+    .newsletter-form button {
+      background: var(--red);
+      border: none;
+      padding: 10px 16px;
+      color: var(--white);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .newsletter-form button:hover { background: #a93226; }
+
+    .footer-bottom {
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-bottom p {
+      font-size: 0.75rem;
+      color: var(--grey);
+    }
+
+    .footer-bottom a {
+      color: var(--grey);
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: color 0.2s;
+    }
+
+    .footer-bottom a:hover { color: var(--white); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+
+      #why {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 80px 24px;
+      }
+
+      .story-wrap {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .who-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+      }
+
+      .gallery-cell.tall { grid-row: span 1; }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .step { border-right: none; border-bottom: 1px solid var(--border); }
+      .step:last-child { border-bottom: none; }
+      .step-connector { display: none; }
+    }
+
+    /* ─── SCROLL ANIMATION ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── TICKER ─── */
+    .ticker-wrap {
+      background: var(--red);
+      overflow: hidden;
+      padding: 10px 0;
+      white-space: nowrap;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+    }
+
+    .ticker-content span {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0 40px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .ticker-content span.dot {
+      color: rgba(255,255,255,0.4);
+      padding: 0;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─── -->
+  <nav>
+    <a href="#" class="nav-logo">scattered by soki</a>
+    <a href="https://billetto.no/e/scattered-a-social-murder-mystery-experience-billetter-1913881" target="_blank" class="nav-cta">Book Now</a>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+
+    <span class="hero-eyebrow">Oslo, Norway</span>
+
+    <h1 class="hero-title">
+      The Murder<br/>
+      <span class="red">by Akershus</span><br/>
+      Fortress
+    </h1>
+
+    <p class="hero-subtitle">A collaborative murder mystery in the heart of Oslo</p>
+    <p class="hero-location">📍 Akershus Fortress &nbsp;·&nbsp; 90 Minutes &nbsp;·&nbsp; Outdoor</p>
+
+    <p class="hero-desc">
+      A researcher vanished chasing his twin's shadow. His notes were discovered — fragmented, cryptic, incomplete. You arrive with strangers drawn by something you can't quite name. Together, you'll decode clues, make choices that matter, and uncover what happened before time runs out.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://billetto.no/e/scattered-a-social-murder-mystery-experience-billetter-1913881" target="_blank" class="btn-primary">Book Your Spot</a>
+      <a href="#storyline" class="btn-ghost">Read the Story</a>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>scroll</span>
+    </div>
+  </section>
+
+  <!-- ─── TICKER ─── -->
+  <div class="ticker-wrap">
+    <div class="ticker-content">
+      <span>90 Minutes</span><span class="dot">·</span>
+      <span>Outdoor Mystery</span><span class="dot">·</span>
+      <span>Akershus Fortress</span><span class="dot">·</span>
+      <span>Groups Welcome</span><span class="dot">·</span>
+      <span>No Experience Required</span><span class="dot">·</span>
+      <span>Beta Edition</span><span class="dot">·</span>
+      <span>Oslo, Norway</span><span class="dot">·</span>
+      <span>90 Minutes</span><span class="dot">·</span>
+      <span>Outdoor Mystery</span><span class="dot">·</span>
+      <span>Akershus Fortress</span><span class="dot">·</span>
+      <span>Groups Welcome</span><span class="dot">·</span>
+      <span>No Experience Required</span><span class="dot">·</span>
+      <span>Beta Edition</span><span class="dot">·</span>
+      <span>Oslo, Norway</span><span class="dot">·</span>
+    </div>
+  </div>
+
+  <!-- ─── WHAT'S INCLUDED ─── -->
+  <div id="included" class="section-full">
+    <div class="section-inner reveal">
+      <span class="section-label">02 — What's Included</span>
+      <h2 class="section-title">Everything you need.<br/><em>Nothing you don't.</em></h2>
+    </div>
+    <div class="included-grid reveal">
+      <div class="included-item">
+        <span class="included-icon">🗺</span>
+        <div>
+          <h3>Physical Clue Kit</h3>
+          <p>Printed fragments, encoded notes, and physical artifacts distributed across the fortress grounds.</p>
+        </div>
+      </div>
+      <div class="included-item">
+        <span class="included-icon">🎭</span>
+        <div>
+          <h3>Guided Narrative Arc</h3>
+          <p>A structured story with a real beginning, middle, and ending — your choices shape the outcome.</p>
+        </div>
+      </div>
+      <div class="included-item">
+        <span class="included-icon">👥</span>
+        <div>
+          <h3>Collective Experience</h3>
+          <p>You work alongside strangers. Their choices affect yours. Real human collaboration, not just puzzles.</p>
+        </div>
+      </div>
+      <div class="included-item">
+        <span class="included-icon">⏱</span>
+        <div>
+          <h3>90-Minute Runtime</h3>
+          <p>Long enough to get lost in the story. Short enough to leave you wanting more.</p>
+        </div>
+      </div>
+      <div class="included-item">
+        <span class="included-icon">🏰</span>
+        <div>
+          <h3>Fortress Setting</h3>
+          <p>Akershus Fortress as your stage — 700 years of history as the backdrop for a story of today.</p>
+        </div>
+      </div>
+      <div class="included-item">
+        <span class="included-icon">🔚</span>
+        <div>
+          <h3>Full Narrative Reveal</h3>
+          <p>At the end, the full truth — what really happened — is revealed to the group collectively.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── WHY CHOOSE ─── -->
+  <section id="why" class="reveal">
+    <div>
+      <span class="section-label">03 — Why Choose This</span>
+      <h2 class="section-title">Not an escape room.<br/>Not a tour.<br/><em>Something else.</em></h2>
+      <p class="section-body">Scattered is designed around a simple belief: the most interesting mystery isn't the crime. It's the people trying to solve it.</p>
+
+      <ul class="why-list">
+        <li>
+          <span class="why-num">01</span>
+          <div>
+            <h4>Built on real psychology</h4>
+            <p>Truth vs. false truth. Players can't just solve — they have to discern. Every fragment is designed to create meaningful doubt.</p>
+          </div>
+        </li>
+        <li>
+          <span class="why-num">02</span>
+          <div>
+            <h4>Genuinely surprising</h4>
+            <p>The story doesn't go where you expect. The ending has been carefully crafted to land — not just conclude.</p>
+          </div>
+        </li>
+        <li>
+          <span class="why-num">03</span>
+          <div>
+            <h4>Strangers become a room</h4>
+            <p>You arrive alone. You leave with people you've genuinely worked alongside. That's rare. We designed for it.</p>
+          </div>
+        </li>
+        <li>
+          <span class="why-num">04</span>
+          <div>
+            <h4>Oslo's best backdrop</h4>
+            <p>The fortress isn't set dressing. Its history, atmosphere, and scale are part of the experience.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="why-quote">
+        <blockquote>"The woods are still watching. But now, so are you."</blockquote>
+        <cite>— Final narration, Scattered</cite>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ─── STORYLINE ─── -->
+  <div id="storyline">
+    <div class="story-wrap reveal">
+      <div class="story-text">
+        <span class="section-label">04 — The Storyline</span>
+        <h2 class="section-title">Two brothers.<br/>One disappeared.<br/><em>Nothing adds up.</em></h2>
+        <p>A researcher spent years tracking his twin brother — through forest, water, and obsession. He documented everything. But when his notes were discovered by a local resident, something was wrong.</p>
+        <p>Some fragments read like a man falling apart. Others read like something else entirely — something wearing his voice like a mask.</p>
+        <p>Your task is not just to find the killer. Your task is to figure out what's real.</p>
+        <a href="https://billetto.no/e/scattered-a-social-murder-mystery-experience-billetter-1913881" target="_blank" class="btn-primary" style="margin-top:16px; display:inline-block;">Enter the Mystery</a>
+      </div>
+
+      <div class="fragment-stack">
+        <div class="story-fragment">
+          <span class="truth-badge">Truth</span>
+          <blockquote>"I documented everything. Every moment of losing him. Every moment of losing myself. The notes aren't clues. They're evidence of a mind splitting open."</blockquote>
+        </div>
+        <div class="fragment-false">
+          <span class="soki-badge">Soki?</span>
+          <blockquote>"He's still alive. I see him sometimes in the forest. Always watching. Always waiting. He leaves me messages. Notes that I didn't write..."</blockquote>
+        </div>
+        <div class="fragment-question">
+          Which fragments are real? Only you can tell.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── HOW IT WORKS ─── -->
+  <section id="how">
+    <div class="reveal">
+      <span class="section-label">05 — How It Works</span>
+      <h2 class="section-title">Simple to join.<br/><em>Hard to forget.</em></h2>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h3>Book Your Spot</h3>
+        <p>Purchase a ticket via Billetto. Choose your date. Bring friends or come solo — both work.</p>
+        <div class="step-connector">→</div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h3>Meet at the Gates</h3>
+        <p>Arrive at Akershus Fortress. Meet the group. Receive your first fragment.</p>
+        <div class="step-connector">→</div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h3>Decode Together</h3>
+        <p>Work through rounds of clues. Decide which fragments are truth and which are false. Every vote matters.</p>
+        <div class="step-connector">→</div>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <h3>Reach the Truth</h3>
+        <p>The full story is revealed. Find out if you cracked it — and what you missed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── WHO ─── -->
+  <div id="who">
+    <div class="who-inner reveal">
+      <div>
+        <span class="section-label">06 — Who Is This For</span>
+        <h2 class="section-title">Made for curious people.<br/><em>All of them.</em></h2>
+        <p class="section-body" style="margin-top:16px;">If you like stories, people, and the occasional walk uphill — you'll fit right in.</p>
+      </div>
+      <div></div>
+
+      <div class="who-card yes">
+        <span class="who-card-label">✓ This is for you if...</span>
+        <ul>
+          <li><span class="mark">→</span> You enjoy mysteries, thrillers, or psychological stories</li>
+          <li><span class="mark">→</span> You're visiting Oslo and want something memorable</li>
+          <li><span class="mark">→</span> You're a local looking for something different</li>
+          <li><span class="mark">→</span> You're happy meeting strangers in a structured setting</li>
+          <li><span class="mark">→</span> You can walk moderate distances outdoors</li>
+          <li><span class="mark">→</span> You want to bring friends, a date, or colleagues</li>
+          <li><span class="mark">→</span> You have no experience — none required</li>
+        </ul>
+      </div>
+
+      <div class="who-card no">
+        <span class="who-card-label">— Not ideal if...</span>
+        <ul>
+          <li><span class="mark">—</span> You're looking for a competitive game (this is cooperative)</li>
+          <li><span class="mark">—</span> You prefer entirely indoor experiences</li>
+          <li><span class="mark">—</span> You're under 15 without adult supervision</li>
+          <li><span class="mark">—</span> You can't handle ambiguity or uncertain endings</li>
+          <li><span class="mark">—</span> You want a traditional guided fortress tour</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PRICING ─── -->
+  <section id="pricing">
+    <div class="reveal">
+      <span class="section-label">07 — Pricing & Booking</span>
+      <h2 class="section-title">Transparent pricing.<br/><em>No surprises.</em></h2>
+      <p class="section-body" style="margin: 0 auto; text-align:center;">Your ticket directly supports the creator and funds future mysteries. Beta pricing is in effect.</p>
+    </div>
+
+    <div class="pricing-cards reveal">
+      <div class="pricing-card">
+        <span class="pricing-tier">Solo / Duo</span>
+        <div class="pricing-price">From <span>NOK</span></div>
+        <div class="pricing-price">299</div>
+        <p class="pricing-note">Per person · Join the group experience</p>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Full 90-minute narrative experience</li>
+          <li><span class="check">✓</span> All clue materials included</li>
+          <li><span class="check">✓</span> Join an existing group session</li>
+          <li><span class="check">✓</span> Full story reveal at end</li>
+        </ul>
+        <a href="https://billetto.no/e/scattered-a-social-murder-mystery-experience-billetter-1913881" target="_blank" class="btn-book-ghost">View on Billetto</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <span class="pricing-badge">Most Popular</span>
+        <span class="pricing-tier">Group (4–8)</span>
+        <div class="pricing-price">From <span>NOK</span></div>
+        <div class="pricing-price">249</div>
+        <p class="pricing-note">Per person · Private group rate</p>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Private session for your group</li>
+          <li><span class="check">✓</span> Full 90-minute experience</li>
+          <li><span class="check">✓</span> All clue materials included</li>
+          <li><span class="check">✓</span> Flexible scheduling</li>
+          <li><span class="check">✓</span> Ideal for team events & celebrations</li>
+        </ul>
+        <a href="https://billetto.no/e/scattered-a-social-murder-mystery-experience-billetter-1913881" target="_blank" class="btn-book">Book Now</a>
+      </div>
+    </div>
+
+    <div class="pricing-trust reveal">
+      <span>🔒 Secure checkout via Billetto</span>
+      <span>↩ Free cancellation (48h notice)</span>
+      <span>☁ Weather contingency available</span>
+      <span>📧 Confirmation sent instantly</span>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ─── FAQ ─── -->
+  <div id="faq">
+    <div class="faq-inner reveal">
+      <span class="section-label">08 — FAQs</span>
+      <h2 class="section-title">Questions.<br/><em>Answered.</em></h2>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Do I need any experience to participate?
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">No experience is required. If you can read, talk, and think — you're ready. The experience is designed to work for first-timers and mystery veterans alike.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Can I come alone, or do I need a group?
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">Both work. Solo participants join a mixed group — and meeting strangers is actually part of the design. You can also bring your own group of 4–8 for a private session.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What happens if the weather is bad?
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">Dress for Oslo weather — layers, waterproof jacket. The experience runs rain or shine. In cases of extreme weather, we'll reschedule or refund. You'll be notified in advance.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What should I bring?
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">Weather-appropriate clothing, comfortable shoes, water, and a curious mind. Snacks are welcome. No phones required — though you can use one for notes if you'd like.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Is this suitable for kids?
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">We recommend ages 15+ for the best experience. Younger participants are welcome with a supervising adult, but the story themes are designed for adult sensibilities.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            How physical is the experience?
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">Moderate walking outdoors across the fortress grounds. If you can walk 2–3km at a relaxed pace, you'll be comfortable. There are no climbing or athletic requirements.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What is the cancellation policy?
+            <span class="faq-toggle">+</span>
+          </button>
+          <div class="faq-answer">Free cancellation with 48 hours notice. Cancellations made within 48 hours of the event are non-refundable, but can be transferred to another date or person.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── GALLERY ─── -->
+  <div id="gallery">
+    <div class="gallery-inner reveal">
+      <span class="section-label">09 — Gallery</span>
+      <h2 class="section-title">See the setting.<br/><em>Feel the atmosphere.</em></h2>
+
+      <div class="gallery-grid">
+        <div class="gallery-cell tall cell-fortress">
+          <p class="atmo-text">"700 years of walls<br/>keeping secrets.<br/>Tonight they're<br/>keeping yours."</p>
+        </div>
+        <div class="gallery-cell cell-dark">
+          <div class="gallery-placeholder">
+            <span class="gallery-icon">🏰</span>
+            <span class="gallery-text">The Fortress</span>
+          </div>
+        </div>
+        <div class="gallery-cell cell-red">
+          <div class="gallery-placeholder">
+            <span class="gallery-icon">📜</span>
+            <span class="gallery-text">The Fragments</span>
+          </div>
+        </div>
+        <div class="gallery-cell cell-dark">
+          <div class="gallery-placeholder">
+            <span class="gallery-icon">👤</span>
+            <span class="gallery-text">The Players</span>
+          </div>
+        </div>
+        <div class="gallery-cell cell-fortress">
+          <div class="gallery-placeholder">
+            <span class="gallery-icon">🌙</span>
+            <span class="gallery-text">Dusk Sessions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TESTIMONIALS ─── -->
+  <div id="testimonials">
+    <div class="testimonials-inner reveal">
+      <span class="section-label">10 — Testimonials</span>
+      <h2 class="section-title">From people<br/><em>who were there.</em></h2>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"I came alone expecting a puzzle. I left with five new people and a story I'm still thinking about. Genuinely unlike anything else in Oslo."</blockquote>
+          <div class="testimonial-author">
+            <div class="author-avatar">M</div>
+            <div class="author-info">
+              <p class="name">Maja T.</p>
+              <p class="origin">Oslo, Norway</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"The ending hit differently than I expected. It's not really about solving a murder — it's about what you believe and why. Brilliant design."</blockquote>
+          <div class="testimonial-author">
+            <div class="author-avatar">J</div>
+            <div class="author-info">
+              <p class="name">James K.</p>
+              <p class="origin">London, UK · Tourist</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"Booked this for our team offsite. Everyone said it was the best team event we'd done. The debrief conversation afterward was incredible."</blockquote>
+          <div class="testimonial-author">
+            <div class="author-avatar">S</div>
+            <div class="author-info">
+              <p class="name">Sofia R.</p>
+              <p class="origin">Bergen, Norway</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="press-strip">
+        <span class="press-label">As seen in</span>
+        <div class="press-names">
+          <span class="press-name">Visit Oslo</span>
+          <span class="press-name">Aftenposten</span>
+          <span class="press-name">Time Out Oslo</span>
+          <span class="press-name">Lonely Planet</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TRUST BADGES ─── -->
+  <section id="trust">
+    <div class="trust-grid reveal">
+      <div class="trust-badge">
+        <span class="trust-badge-icon">🔒</span>
+        <div class="trust-badge-text">
+          <p class="badge-title">Secure Payments</p>
+          <p class="badge-sub">via Billetto</p>
+        </div>
+      </div>
+      <div class="trust-badge">
+        <span class="trust-badge-icon">📍</span>
+        <div class="trust-badge-text">
+          <p class="badge-title">Oslo Based</p>
+          <p class="badge-sub">Local creator</p>
+        </div>
+      </div>
+      <div class="trust-badge">
+        <span class="trust-badge-icon">↩</span>
+        <div class="trust-badge-text">
+          <p class="badge-title">Free Cancellation</p>
+          <p class="badge-sub">48h notice</p>
+        </div>
+      </div>
+      <div class="trust-badge">
+        <span class="trust-badge-icon">⭐</span>
+        <div class="trust-badge-text">
+          <p class="badge-title">5-Star Rated</p>
+          <p class="badge-sub">Beta edition</p>
+        </div>
+      </div>
+      <div class="trust-badge">
+        <span class="trust-badge-icon">🧭</span>
+        <div class="trust-badge-text">
+          <p class="badge-title">No Experience</p>
+          <p class="badge-sub">Required</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FINAL CTA ─── -->
+  <div id="final-cta">
+    <div class="bg-accent"></div>
+    <span class="urgency">Limited Spots Per Session</span>
+    <h2>The notes are waiting.<br/><em>Are you?</em></h2>
+    <p class="cta-sub">Join the mystery at Akershus Fortress. 90 minutes. One truth. Countless ways to be wrong.</p>
+    <a href="https://billetto.no/e/scattered-a-social-murder-mystery-experience-billetter-1913881" target="_blank" class="btn-primary" style="font-size:0.9rem; padding:18px 56px;">Book Your Spot Now</a>
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <p class="footer-brand">scattered</p>
+        <p class="footer-tagline">A social murder mystery experience by soki.<br/>Oslo, Norway.</p>
+        <div class="footer-social">
+          <a href="#" class="social-link">IG</a>
+          <a href="#" class="social-link">TT</a>
+          <a href="mailto:seanaguinaldo02@gmail.com" class="social-link">✉</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Links</h4>
+        <ul>
+          <li><a href="#included">What's Included</a></li>
+          <li><a href="#storyline">The Storyline</a></li>
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#faq">FAQs</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Stay Updated</h4>
+        <p style="font-size:0.8rem; color:var(--grey); margin-bottom:12px;">New mysteries. New dates. First to know.</p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="your@email.com" />
+          <button type="button">→</button>
+        </div>
+        <p style="font-size:0.7rem; color:var(--grey); margin-top:10px;">No spam. Just stories.</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 Scattered by Soki. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="https://docs.google.com/document/d/1yHXQkSWtBick7qH7V74iy53ZEihrcJSMCQGgH9_7tB4/edit" target="_blank">Terms & Conditions</a>
+        <a href="mailto:seanaguinaldo02@gmail.com">Contact</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // FAQ toggle
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

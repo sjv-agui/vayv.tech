@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>soki — enter the realm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Azeret+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../public/style.css" />
+  <style>
+    /* lobby-specific layout only — no overrides */
+
+    .lobby-body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lobby-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 40px 80px;
+    }
+
+    .lobby-inner {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    /* screens */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* form fields */
+    .field { margin-bottom: 20px; }
+
+    .field label {
+      display: block;
+      font-family: var(--mono-alt);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--dim);
+      margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #2a2a2a;
+      color: #c8c8c8;
+      font-family: var(--mono);
+      font-size: 14px;
+      padding: 10px 0;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus { border-bottom-color: var(--green); }
+    .field input::placeholder { color: #2a2a2a; }
+
+    .screen-btns { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .screen-btns .btn { flex: 1; min-width: 120px; text-align: center; }
+
+    /* error */
+    .error-msg {
+      font-family: var(--mono-alt);
+      font-size: 10px;
+      color: var(--red);
+      letter-spacing: 2px;
+      margin-top: 14px;
+      min-height: 16px;
+    }
+
+    /* session code */
+    .code-block { margin: 28px 0; }
+
+    .code-display {
+      font-family: var(--mono-alt);
+      font-size: clamp(36px, 9vw, 60px);
+      letter-spacing: 14px;
+      color: var(--green);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: none;
+      color: #2a2a2a;
+      font-family: var(--mono-alt);
+      font-size: 10px;
+      letter-spacing: 3px;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .copy-btn:hover, .copy-btn.copied { color: var(--green); }
+
+    /* divider */
+    .lobby-divider {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      margin: 32px 0;
+    }
+
+    /* player list */
+    .player-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
+
+    .player-count {
+      font-family: var(--mono-alt);
+      font-size: 10px;
+      color: var(--green);
+      letter-spacing: 3px;
+    }
+
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #111;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: #c8c8c8;
+    }
+
+    .player-pip {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+    .player-pip.host { background: var(--red); }
+
+    .player-role {
+      font-family: var(--mono-alt);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--red);
+      margin-left: auto;
+    }
+
+    /* status line */
+    .lobby-status {
+      margin-top: 24px;
+      font-family: var(--mono-alt);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--dim);
+    }
+
+    .blink { animation: blink 1.2s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    @media (max-width: 480px) {
+      .lobby-main { padding: 100px 24px 60px; }
+      .screen-btns { flex-direction: column; }
+      .screen-btns .btn { flex: unset; }
+    }
+  </style>
+</head>
+<body class="lobby-body">
+
+  <nav class="nav" id="nav">
+    <a href="/soki/public/">
+      <span class="nav-brand">soki</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/soki/public/#realms">realms</a></li>
+      <li><a href="/soki/public/#how">how it works</a></li>
+      <li><a href="/soki/join/" class="nav-cta">join_</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/soki/public/#realms">realms</a>
+    <a href="/soki/public/#how">how it works</a>
+    <a href="/soki/join/" class="mob-cta">join_</a>
+  </div>
+
+  <main class="lobby-main">
+    <div class="lobby-inner">
+
+      <!-- HOME -->
+      <div class="screen active" id="screen-home">
+        <div class="section-label">// system access</div>
+        <h1 class="hero-title">enter<br>the realm_</h1>
+        <p class="hero-desc">
+          create a session and share your code,<br>or join one already in progress.
+        </p>
+        <div class="screen-btns">
+          <button class="btn" onclick="showScreen('screen-create')">create game_</button>
+          <button class="btn dim" onclick="showScreen('screen-join')">join game_</button>
+        </div>
+      </div>
+
+      <!-- CREATE -->
+      <div class="screen" id="screen-create">
+        <div class="section-label">// new session</div>
+        <h2 class="hero-title">create_</h2>
+        <p class="hero-desc">you will be the host. share the code when you're in.</p>
+        <div class="field">
+          <label>your name</label>
+          <input type="text" id="create-username" placeholder="what do they call you" maxlength="32" autocomplete="off" />
+        </div>
+        <div class="error-msg" id="create-error"></div>
+        <div class="screen-btns">
+          <button class="btn" onclick="handleCreate()">create_</button>
+          <button class="btn dim" onclick="showScreen('screen-home')">back_</button>
+        </div>
+      </div>
+
+      <!-- JOIN -->
+      <div class="screen" id="screen-join">
+        <div class="section-label">// join session</div>
+        <h2 class="hero-title">join_</h2>
+        <p class="hero-desc">
+          enter the code you received and either your name (new player)<br>
+          or your player id (returning player).
+        </p>
+        <div class="field">
+          <label>session code</label>
+          <input type="text" id="join-code" placeholder="xxxxxx" maxlength="6" autocomplete="off"
+                 oninput="this.value=this.value.toUpperCase()" />
+        </div>
+        <div class="field">
+          <label>your name or player id</label>
+          <input type="text" id="join-username" placeholder="name (new) or player id (returning)" maxlength="64" autocomplete="off" />
+        </div>
+        <div class="error-msg" id="join-error"></div>
+        <div class="screen-btns">
+          <button class="btn" onclick="handleJoin()">join_</button>
+          <button class="btn dim" onclick="showScreen('screen-home')">back_</button>
+        </div>
+      </div>
+
+      <!-- LOBBY -->
+      <div class="screen" id="screen-lobby">
+        <div class="section-label" id="lobby-section-label">// waiting room — haraya</div>
+        <h2 class="hero-title" id="lobby-title">lobby_</h2>
+
+        <div class="code-block">
+          <div class="section-label">session code</div>
+          <div class="code-display" id="lobby-code">——</div>
+          <button class="copy-btn" id="copy-btn" onclick="copyCode()">[ copy code ]</button>
+        </div>
+
+        <div class="code-block" id="my-id-block" hidden style="margin-top:12px">
+          <div class="section-label">your player id (save this to rejoin)</div>
+          <div class="code-display" id="lobby-my-id" style="font-size:14px;word-break:break-all">——</div>
+          <button class="copy-btn" id="copy-id-btn" onclick="copyMyId()">[ copy id ]</button>
+        </div>
+
+        <!-- PROFILE: editable name -->
+        <div class="code-block" id="profile-block" hidden style="margin-top:12px">
+          <div class="section-label">your name</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" id="profile-name" maxlength="32" autocomplete="off"
+                   style="flex:1;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.18);padding:8px 10px;font-family:'Azeret Mono',monospace;font-size:14px" />
+            <button class="copy-btn" onclick="saveName()">[ save ]</button>
+          </div>
+          <div class="error-msg" id="profile-err" style="margin-top:6px;min-height:14px"></div>
+        </div>
+
+        <hr class="lobby-divider" />
+
+        <div class="player-list-header">
+          <span class="section-label" style="margin-bottom:0">// players</span>
+          <span class="player-count" id="player-count">0 / 12</span>
+        </div>
+        <div id="player-list-items"></div>
+
+        <div class="lobby-status" id="lobby-status">
+          waiting for players<span class="blink">_</span>
+        </div>
+
+        <div class="screen-btns" id="host-actions" hidden>
+          <button class="btn" onclick="handleStart()">start game_</button>
+        </div>
+        <div class="error-msg" id="lobby-error"></div>
+
+        <!-- HOW IT WORKS -->
+        <div class="code-block" style="margin-top:24px;opacity:0.85">
+          <div class="section-label">// how this works</div>
+          <ul style="font-size:13px;line-height:1.7;padding-left:18px;margin:6px 0">
+            <li>each round, the host opens a <strong>location</strong> and everyone is given a random <strong>character</strong></li>
+            <li>your character has a backstory split into pieces — those pieces go to <em>other players</em>, never yourself</li>
+            <li>so you hold fragments of someone else's story, and they hold pieces of yours</li>
+            <li>during <strong>chat</strong>, ask each other questions to surface the truth</li>
+            <li>then the host opens a <strong>vote</strong> — answer the oracle question</li>
+            <li>high agreement triggers <strong>soki</strong> (a false sequence). low agreement reveals the <strong>truth</strong></li>
+            <li>final score is collective — you win or lose together</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span class="footer-brand">soki v20.26.1</span>
+    <div class="footer-links">
+      <a href="/soki/public/">home</a>
+      <a href="/soki/public/#realms">realms</a>
+    </div>
+    <span class="footer-status">system: active</span>
+  </footer>
+
+  <script src="../public/lobby.js"></script>
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40));
+
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    }));
+  </script>
+</body>
+</html>
