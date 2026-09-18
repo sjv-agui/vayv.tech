@@ -7,7 +7,7 @@
   <meta name="description" content="One QR code on the table. Guests take photos on their own phones. They appear on the big screen seconds later — with their name underneath.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,13 +18,14 @@
       --cream:  #e3ebf0;
       --ash:    #b7bfb4;
 
-      --surface: #0d0d20;
-      --card:    #111126;
-      --border:  rgba(183,191,180,0.12);
-      --gold-dim: rgba(170,139,19,0.2);
+      --surface: #120e09;
+      --card:    #180f07;
+      --border:  rgba(200,175,130,0.15);
+      --gold-dim: rgba(170,139,19,0.32);
 
       --display: "Archivo Black","Arial Black",Impact,sans-serif;
       --util: "Archivo","Helvetica Neue",Arial,sans-serif;
+      --script: "Dancing Script", cursive;
     }
 
     html { scroll-behavior: smooth; }
@@ -97,9 +98,10 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 65% 55% at 12% 0%, rgba(170,139,19,0.24) 0%, transparent 58%),
-        radial-gradient(ellipse 45% 45% at 92% 8%, rgba(170,139,19,0.14) 0%, transparent 55%),
-        radial-gradient(ellipse 80% 60% at 50% 115%, rgba(15,15,51,0.95) 0%, transparent 65%);
+        radial-gradient(ellipse 85% 70% at 8% -8%, rgba(210,160,28,0.42) 0%, transparent 52%),
+        radial-gradient(ellipse 55% 55% at 96% 6%, rgba(170,139,19,0.28) 0%, transparent 50%),
+        radial-gradient(ellipse 65% 60% at 50% 108%, rgba(160,100,12,0.35) 0%, transparent 58%),
+        radial-gradient(ellipse 35% 35% at 62% 40%, rgba(170,139,19,0.07) 0%, transparent 65%);
       pointer-events: none;
     }
 
@@ -107,10 +109,35 @@
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(227,235,240,0.022) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(227,235,240,0.022) 1px, transparent 1px);
+        linear-gradient(rgba(200,175,130,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,175,130,0.035) 1px, transparent 1px);
       background-size: 60px 60px;
       pointer-events: none;
+    }
+
+    .hero-stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-stars::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(210,165,40,0.65) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(227,235,240,0.38) 1px, transparent 1px),
+        radial-gradient(circle, rgba(210,165,40,0.5) 1px, transparent 1px),
+        radial-gradient(circle, rgba(227,235,240,0.25) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(210,165,40,0.4) 1px, transparent 1px);
+      background-size: 260px 300px, 180px 220px, 390px 340px, 150px 180px, 310px 260px;
+      background-position: 14% 22%, 73% 38%, 31% 70%, 87% 14%, 52% 82%;
+      animation: starDrift 10s ease-in-out infinite alternate;
+    }
+    @keyframes starDrift {
+      0%   { opacity: 0.55; transform: translateY(0); }
+      100% { opacity: 1;    transform: translateY(-6px); }
     }
 
     .hero-inner {
@@ -122,6 +149,15 @@
       grid-template-columns: 1fr min(260px, 34%);
       gap: clamp(32px, 6vw, 80px);
       align-items: center;
+    }
+
+    .hero-prelude {
+      display: block;
+      font-family: var(--script);
+      font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+      color: rgba(210,165,40,0.72);
+      line-height: 1;
+      margin-bottom: 10px;
     }
 
     .hero-eyebrow {
@@ -244,7 +280,7 @@
     }
     .ticker-track {
       display: inline-block;
-      animation: tickerScroll 30s linear infinite;
+      animation: tickerScroll 44s linear infinite;
     }
     .ticker-track span {
       font-family: var(--util);
@@ -342,7 +378,7 @@
       font-family: var(--display);
       font-size: clamp(3.5rem, 7vw, 5.5rem);
       line-height: 1;
-      color: rgba(183,191,180,0.1);
+      color: rgba(170,139,19,0.16);
       margin-bottom: 16px;
       display: block;
     }
@@ -602,7 +638,9 @@
     .cta-glow {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 65% 65% at 50% 110%, rgba(170,139,19,0.14) 0%, transparent 68%);
+      background:
+        radial-gradient(ellipse 85% 85% at 50% 115%, rgba(200,155,25,0.32) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 45% at 50% 50%, rgba(170,139,19,0.09) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -736,13 +774,16 @@
     /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       .hero-inner          { grid-template-columns: 1fr; }
-      .hero-card           { max-width: 180px; margin: 0 auto; }
+      .hero-card           { max-width: 260px; margin: 0 auto; }
       .steps-grid          { grid-template-columns: 1fr; }
       .step-item           { border-right: none; border-bottom: 1px solid var(--border); }
       .step-item:last-child { border-bottom: none; }
+      .step-art svg        { max-width: 200px; }
       .screen-inner        { grid-template-columns: 1fr; }
+      .screen-inner svg    { max-width: 340px; margin: 0 auto; }
       .two-col             { grid-template-columns: 1fr; }
       .footer-body         { grid-template-columns: 1fr; }
+      .ticker-track        { animation-duration: 62s; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -765,9 +806,11 @@
   <section id="hero">
     <div class="hero-bg"></div>
     <div class="hero-grid"></div>
+    <div class="hero-stars"></div>
 
     <div class="hero-inner">
       <div class="hero-text">
+        <span class="hero-prelude">para sa mga taong mahal mo</span>
         <p class="hero-eyebrow">Your party. Your photos. Your people.</p>
         <h1 class="hero-title">Every guest is<br>the <em>photographer</em></h1>
         <p class="hero-lede">
