@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagmaytaym Party One-Pager</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+  <style>
+  :root {
+    --ink:      #0c1212;
+    --plum-900: #0f0f33;
+    --plum-800: #0f0f33;
+    --plum-700: #0f0f33;
+    --rose:     #aa8b13;
+    --mango:    #aa8b13;
+    --gold:     #aa8b13;
+    --cream:    #e3ebf0;
+    --dusk:     #b7bfb4;
+    --paper:    #e3ebf0;
+    --ash:      #b7bfb4;
+    --slate:    #0c1212;
+
+    --display: "Archivo Black", "Arial Black", Impact, sans-serif;
+    --util: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  }
+
+  body {
+    background: var(--ash);
+    color: var(--ink);
+    font-family: var(--body);
+    margin: 0;
+  }
+
+  .frame {
+    padding-inline: 16px;
+    padding-block: 22px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .stamp {
+    font-family: var(--util);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+    display: flex;
+    gap: 0.9em;
+    align-items: baseline;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+  .stamp b { color: var(--rose); font-weight: 700; }
+
+  /* ---- the A4 sheet. Everything inside is sized in em off the sheet's
+         own font-size, so one number scales the whole page.
+         66em = 210mm at 9pt.  93.6em = 297mm. ---- */
+  .sheet {
+    font-size: min(9.4px, 1.34vw);
+    width: min(100%, 66em);
+    min-height: 93.6em;
+    background: var(--paper);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 1.4em 4em -1.4em rgba(36, 11, 27, 0.42);
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .pad { padding-inline: 4.4em; }
+
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+
+  .eyebrow {
+    font-family: var(--util);
+    font-weight: 700;
+    font-size: 1.05em;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  /* =================== 1. HERO =================== */
+  .hero {
+    background: var(--ink);
+    background-image:
+      radial-gradient(28em 19em at 8% -18%, rgba(232, 51, 109, 0.55), transparent 62%),
+      radial-gradient(24em 17em at 104% 8%, rgba(255, 138, 61, 0.42), transparent 62%),
+      radial-gradient(22em 15em at 58% 128%, rgba(255, 199, 89, 0.24), transparent 66%);
+    color: var(--cream);
+    padding-block: 3.4em 3.2em;
+    display: grid;
+    grid-template-columns: 1fr 15.6em;
+    gap: 3em;
+    align-items: center;
+  }
+  .hero .eyebrow { color: var(--gold); }
+  .hero h1 {
+    font-family: var(--display);
+    font-size: 4.35em;
+    line-height: 0.94;
+    letter-spacing: -0.018em;
+    text-transform: uppercase;
+    margin-block: 0.44em 0.34em;
+  }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+  .hero .lede {
+    font-size: 1.48em;
+    line-height: 1.42;
+    max-width: 24em;
+    color: var(--cream);
+  }
+  .cta {
+    margin-top: 1.5em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8em;
+    font-family: var(--util);
+  }
+  .cta .pill {
+    background: linear-gradient(94deg, var(--rose), var(--mango));
+    color: var(--cream);
+    font-weight: 700;
+    font-size: 1.22em;
+    letter-spacing: 0.01em;
+    padding: 0.62em 1.15em;
+    border-radius: 0.65em;
+  }
+  .cta .where {
+    font-size: 1.1em;
+    color: var(--dusk);
+    border-bottom: 0.11em dashed rgba(217, 188, 203, 0.6);
+    padding-bottom: 0.15em;
+  }
+
+  /* the sample event card in the hero */
+  .card-sample { display: flex; flex-direction: column; align-items: center; gap: 0.75em; }
+  .card-sample svg { width: 100%; height: auto; display: block; }
+  .card-sample figcaption {
+    font-family: var(--util);
+    font-size: 0.98em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(217, 188, 203, 0.85);
+  }
+
+  /* =================== 2. THREE STEPS =================== */
+  .steps { padding-block: 2.9em 0.4em; }
+  .sec-head { display: flex; align-items: baseline; gap: 1em; margin-bottom: 1.5em; }
+  .sec-head h2 {
+    font-family: var(--display);
+    font-size: 2.05em;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .sec-head .rule { flex: 1; height: 0.12em; background: var(--ash); }
+  .sec-head .tag {
+    font-family: var(--util);
+    font-size: 1.02em;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rose);
+    white-space: nowrap;
+  }
+
+  .step-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.3em; }
+  .step { display: grid; grid-template-columns: 2.6em 1fr; gap: 0.9em; align-items: start; }
+  .step .num {
+    font-family: var(--display);
+    font-size: 2.5em;
+    line-height: 0.8;
+    color: var(--ash);
+    grid-row: span 2;
+  }
+  .step h3 {
+    font-family: var(--util);
+    font-size: 1.28em;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--plum-700);
+    margin-bottom: 0.4em;
+  }
+  .step p { font-size: 1.24em; line-height: 1.44; color: var(--slate); }
+  .step > div:not(.art) { min-height: 12.7em; }
+  .step .art { grid-column: 2; margin-top: 1em; }
+  .step .art svg { width: 100%; max-width: 100%; height: auto; display: block; }
+
+  /* =================== 3. THE BIG SCREEN =================== */
+  .screen {
+    padding-block: 2.6em;
+    display: grid;
+    grid-template-columns: 1fr 1.02fr;
+    gap: 2.6em;
+    align-items: center;
+  }
+  .screen svg { width: 100%; height: auto; display: block; }
+  .screen h2 {
+    font-family: var(--display);
+    font-size: 2.35em;
+    line-height: 1.02;
+    text-transform: uppercase;
+    letter-spacing: -0.012em;
+  }
+  .screen h2 em { font-style: normal; color: var(--rose); }
+  .screen p { font-size: 1.28em; line-height: 1.48; color: var(--slate); margin-top: 0.85em; }
+  .no-app {
+    margin-top: 1.2em;
+    font-family: var(--util);
+    font-size: 1.1em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--plum-800);
+    background: var(--gold);
+    display: inline-block;
+    padding: 0.55em 0.9em;
+    border-radius: 0.5em;
+  }
+
+  /* =================== 4. TWO COLUMNS =================== */
+  .cols {
+    padding-block: 2.2em;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3em;
+    border-top: 0.12em solid var(--ash);
+  }
+  .cols h3 {
+    font-family: var(--display);
+    font-size: 1.62em;
+    text-transform: uppercase;
+    margin-bottom: 0.85em;
+  }
+  .cols ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.72em; }
+  .cols li { font-size: 1.24em; line-height: 1.4; color: var(--slate); padding-left: 1.5em; position: relative; }
+  .cols li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0.46em;
+    width: 0.52em; height: 0.52em;
+    border-radius: 50%;
+    background: var(--rose);
+  }
+  .cols li b { color: var(--ink); font-weight: 600; }
+  .later {
+    margin-top: 1.1em;
+    padding: 0.85em 1em;
+    background: var(--cream);
+    border-left: 0.25em solid var(--mango);
+    font-size: 1.14em;
+    line-height: 1.42;
+    color: var(--plum-700);
+  }
+  .later b {
+    font-family: var(--util);
+    font-weight: 700;
+    font-size: 0.86em;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    display: block;
+    color: var(--mango);
+    margin-bottom: 0.28em;
+  }
+
+  /* =================== 5. FAQ =================== */
+  .faq { padding-block: 2.1em; border-top: 0.12em solid var(--ash); }
+  .faq h3 {
+    font-family: var(--display);
+    font-size: 1.62em;
+    text-transform: uppercase;
+    margin-bottom: 1em;
+  }
+  .faq dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.05em 2.6em; }
+  .faq dt {
+    font-family: var(--body);
+    font-style: italic;
+    font-size: 1.24em;
+    line-height: 1.35;
+    color: var(--ink);
+    margin-bottom: 0.22em;
+  }
+  .faq dd { margin: 0; font-size: 1.18em; line-height: 1.42; color: var(--slate); }
+
+  /* =================== 6. FOOTER =================== */
+  .foot {
+    margin-top: auto;
+    background: var(--plum-900);
+    color: var(--dusk);
+    padding-block: 1.4em;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1.5em;
+    flex-wrap: wrap;
+    font-family: var(--util);
+    font-size: 1.05em;
+  }
+  .foot .mark { color: var(--cream); font-weight: 700; letter-spacing: 0.02em; }
+  .foot .mark span { color: var(--gold); }
+  .foot .tag-line { font-style: normal; }
+
+  /* Keep the inline illustrations on the same palette as the page. */
+  svg [fill="#180611"], svg [fill="#0C0308"] { fill: var(--ink) !important; }
+  svg [fill="#240B1B"], svg [fill="#33122A"], svg [fill="#451B39"] { fill: var(--plum-800) !important; }
+  svg [fill="#E8336D"], svg [fill="#FF8A3D"], svg [fill="#FFC759"], svg [fill="#FFB25C"] { fill: var(--gold) !important; }
+  svg [fill="#FFF4E8"], svg [fill="#FFFBF5"], svg [fill="#FFE4C4"], svg [fill="#FFFFFF"] { fill: var(--cream) !important; }
+  svg [fill="#D9BCCB"], svg [fill="#8C6F7E"] { fill: var(--dusk) !important; }
+  svg [fill="#6B5560"] { fill: var(--slate) !important; }
+  svg [stroke="#FFC759"], svg [stroke="#E8336D"], svg [stroke="#FF8A3D"] { stroke: var(--gold) !important; }
+  svg [stroke="#451B39"] { stroke: var(--plum-800) !important; }
+  svg [stop-color="#FFC759"], svg [stop-color="#FF8A3D"], svg [stop-color="#FFB25C"], svg [stop-color="#E8336D"] { stop-color: var(--gold) !important; }
+  svg [stop-color="#FFF4E8"], svg [stop-color="#FFE4C4"] { stop-color: var(--cream) !important; }
+  svg [stop-color="#451B39"], svg [stop-color="#33122A"] { stop-color: var(--plum-800) !important; }
+  svg [stop-color="#180611"] { stop-color: var(--ink) !important; }
+
+  /* =================== PRINT =================== */
+  @page { size: A4 portrait; margin: 0; }
+  @media print {
+    body { background: var(--cream); }
+    .frame { padding: 0; gap: 0; }
+    .stamp, .note { display: none !important; }
+    .sheet {
+      font-size: 9pt;
+      width: 210mm;
+      height: 297mm;
+      min-height: 0;
+      box-shadow: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="frame">
+
+  <p class="stamp">
+    <span>A4 portrait · print at 100%</span>
+    <span>·</span>
+    <span>Pagmaytaym Party</span>
+    <span>·</span>
+    <b>Draft for comms &amp; pitch</b>
+  </p>
+
+  <article class="sheet">
+
+    <!-- ============ 1 · HERO ============ -->
+    <header class="hero pad">
+      <div>
+        <p class="eyebrow">Pagmaytaym Party · Oslo</p>
+        <h1>Every guest is<br>the <em>photographer</em></h1>
+        <p class="lede">
+          One QR code on the table. Your guests take photos on their own phones, and they
+          appear on the big screen seconds later — with their name underneath.
+        </p>
+        <p class="cta">
+          <span class="pill">Book your celebration</span>
+          <span class="where">your link or number here</span>
+        </p>
+      </div>
+
+      <figure class="card-sample">
+        <!-- printable event card: what sits on the table -->
+        <svg viewBox="0 0 176 224" role="img" aria-label="A printed table card reading Lola Nena's 80th with a QR code to scan.">
+          <defs>
+            <linearGradient id="cardG" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#FFF4E8"/>
+              <stop offset="1" stop-color="#FFE4C4"/>
+            </linearGradient>
+          </defs>
+          <rect x="1.5" y="1.5" width="173" height="221" rx="12" fill="url(#cardG)" stroke="#FFC759" stroke-width="3"/>
+          <text x="88" y="27" text-anchor="middle" fill="#E8336D" font-family="Archivo, Arial, sans-serif" font-size="8.4" font-weight="700" letter-spacing="2.1">SCAN ME</text>
+          <text x="88" y="45" text-anchor="middle" fill="#240B1B" font-family="Archivo Black, Arial Black, sans-serif" font-size="13.5">Lola Nena&#8217;s</text>
+          <text x="88" y="60" text-anchor="middle" fill="#240B1B" font-family="Archivo Black, Arial Black, sans-serif" font-size="13.5">80th</text>
+
+          <!-- QR illustration: corner finders + a fixed data pattern -->
+          <g transform="translate(44 72)">
+            <rect x="0" y="0" width="88" height="88" fill="#FFFBF5" stroke="#451B39" stroke-width="1.6"/>
+            <g fill="#240B1B">
+              <!-- finder squares -->
+              <path d="M6 6h22v22H6z"/><path d="M10 10h14v14H10z" fill="#FFFBF5"/><path d="M13 13h8v8h-8z" fill="#240B1B"/>
+              <path d="M60 6h22v22H60z"/><path d="M64 10h14v14H64z" fill="#FFFBF5"/><path d="M67 13h8v8h-8z" fill="#240B1B"/>
+              <path d="M6 60h22v22H6z"/><path d="M10 64h14v14H10z" fill="#FFFBF5"/><path d="M13 67h8v8h-8z" fill="#240B1B"/>
+              <!-- timing + data modules -->
+              <path d="M32 6h4v4h-4zM40 6h4v4h-4zM48 6h4v4h-4zM36 14h4v4h-4zM44 14h4v4h-4zM32 22h4v4h-4zM48 22h4v4h-4z"/>
+              <path d="M6 32h4v4H6zM14 32h4v4h-4zM22 32h4v4h-4zM10 40h4v4h-4zM18 40h4v4h-4zM6 48h4v4H6zM22 48h4v4h-4z"/>
+              <path d="M32 32h4v4h-4zM40 32h4v4h-4zM48 32h4v4h-4zM36 36h4v4h-4zM44 40h4v4h-4zM32 44h4v4h-4zM48 48h4v4h-4zM40 48h4v4h-4z"/>
+              <path d="M60 32h4v4h-4zM68 36h4v4h-4zM76 32h4v4h-4zM60 44h4v4h-4zM72 44h4v4h-4zM78 48h4v4h-4z"/>
+              <path d="M32 60h4v4h-4zM44 60h4v4h-4zM36 68h4v4h-4zM48 68h4v4h-4zM32 76h4v4h-4zM44 76h4v4h-4z"/>
+              <path d="M60 60h4v4h-4zM72 60h4v4h-4zM64 68h4v4h-4zM78 64h4v4h-4zM60 76h4v4h-4zM70 76h4v4h-4zM78 76h4v4h-4z"/>
+            </g>
+          </g>
+          <text x="88" y="180" text-anchor="middle" fill="#6B5560" font-family="Archivo, Arial, sans-serif" font-size="7.6" font-weight="600" letter-spacing="0.9">POINT YOUR CAMERA HERE</text>
+          <line x1="34" y1="190" x2="142" y2="190" stroke="#FFC759" stroke-width="1.4"/>
+          <text x="88" y="205" text-anchor="middle" fill="#451B39" font-family="Archivo, Arial, sans-serif" font-size="8.2" font-weight="700" letter-spacing="1.6">NO APP NEEDED</text>
+        </svg>
+        <figcaption>Sample table card</figcaption>
+      </figure>
+    </header>
+
+    <!-- ============ 2 · THREE STEPS ============ -->
+    <section class="steps pad">
+      <div class="sec-head">
+        <h2>How a guest uses it</h2>
+        <span class="rule"></span>
+        <span class="tag">Three taps, start to finish</span>
+      </div>
+
+      <div class="step-row">
+
+        <div class="step">
+          <span class="num">1</span>
+          <div>
+            <h3>Scan</h3>
+            <p>Point the phone camera at the QR code. It opens like any web page — nothing to install, no account, no password.</p>
+          </div>
+          <div class="art">
+            <svg viewBox="0 0 168 196" role="img" aria-label="A phone camera pointed at the QR code, opening a web page.">
+              <rect x="34" y="4" width="100" height="188" rx="14" fill="#180611"/>
+              <rect x="39" y="9" width="90" height="178" rx="10" fill="#33122A"/>
+              <rect x="72" y="13" width="24" height="3.4" rx="1.7" fill="#180611"/>
+              <!-- camera viewfinder -->
+              <rect x="49" y="34" width="70" height="70" rx="4" fill="#0C0308"/>
+              <g stroke="#FFC759" stroke-width="2.4" fill="none" stroke-linecap="round">
+                <path d="M55 52v-8h8"/><path d="M113 52v-8h-8"/><path d="M55 86v8h8"/><path d="M113 86v8h-8"/>
+              </g>
+              <g fill="#FFF4E8">
+                <path d="M68 55h10v10H68zM90 55h10v10H90zM68 77h10v10H68z"/>
+                <path d="M84 69h5v5h-5zM95 71h5v5h-5zM86 80h5v5h-5z"/>
+              </g>
+              <text x="84" y="124" text-anchor="middle" fill="#FFC759" font-family="Archivo, Arial, sans-serif" font-size="7.4" font-weight="700" letter-spacing="1.5">TAP TO OPEN</text>
+              <rect x="49" y="132" width="70" height="20" rx="10" fill="#FFF4E8"/>
+              <text x="84" y="145" text-anchor="middle" textLength="62" lengthAdjust="spacingAndGlyphs" fill="#240B1B" font-family="Archivo, Arial, sans-serif" font-size="7.2" font-weight="700">Lola Nena&#8217;s 80th</text>
+              <rect x="49" y="160" width="70" height="4" rx="2" fill="#451B39"/>
+              <rect x="49" y="169" width="46" height="4" rx="2" fill="#451B39"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="num">2</span>
+          <div>
+            <h3>Snap</h3>
+            <p>Type your name once — the phone remembers it. Then take a photo and add a few words if you feel like it.</p>
+          </div>
+          <div class="art">
+            <svg viewBox="0 0 168 196" role="img" aria-label="The upload screen: a name field, a big Take a photo button, and a caption box.">
+              <rect x="34" y="4" width="100" height="188" rx="14" fill="#180611"/>
+              <rect x="39" y="9" width="90" height="178" rx="10" fill="#33122A"/>
+              <rect x="72" y="13" width="24" height="3.4" rx="1.7" fill="#180611"/>
+              <text x="84" y="32" text-anchor="middle" fill="#FFC759" font-family="Archivo, Arial, sans-serif" font-size="5.4" font-weight="700" letter-spacing="1.6">PAGMAYTAYM PARTY</text>
+              <text x="84" y="43" text-anchor="middle" textLength="72" lengthAdjust="spacingAndGlyphs" fill="#FFF4E8" font-family="Archivo Black, Arial Black, sans-serif" font-size="8.6">Lola Nena&#8217;s 80th</text>
+              <text x="49" y="60" fill="#FFC759" font-family="Archivo, Arial, sans-serif" font-size="5.6" font-weight="700" letter-spacing="1.1">WHAT&#8217;S YOUR NAME?</text>
+              <rect x="49" y="65" width="70" height="17" rx="6" fill="#0C0308" stroke="#FFC759" stroke-width="1.3"/>
+              <text x="56" y="77" fill="#FFF4E8" font-family="Archivo, Arial, sans-serif" font-size="8" font-weight="600">Tita Baby</text>
+              <!-- big primary button -->
+              <defs>
+                <linearGradient id="btnG" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#E8336D"/><stop offset="1" stop-color="#FF8A3D"/>
+                </linearGradient>
+              </defs>
+              <rect x="49" y="92" width="70" height="30" rx="9" fill="url(#btnG)"/>
+              <circle cx="69" cy="107" r="6" fill="none" stroke="#FFF4E8" stroke-width="1.8"/>
+              <circle cx="69" cy="107" r="2.3" fill="#FFF4E8"/>
+              <text x="80" y="110" textLength="36" lengthAdjust="spacingAndGlyphs" fill="#FFF4E8" font-family="Archivo, Arial, sans-serif" font-size="8" font-weight="700">Take a photo</text>
+              <rect x="49" y="128" width="70" height="17" rx="6" fill="none" stroke="#FFF4E8" stroke-opacity="0.32" stroke-width="1.3"/>
+              <text x="84" y="140" text-anchor="middle" textLength="60" lengthAdjust="spacingAndGlyphs" fill="#D9BCCB" font-family="Archivo, Arial, sans-serif" font-size="7" font-weight="600">Choose from my photos</text>
+              <text x="49" y="160" fill="#FFC759" font-family="Archivo, Arial, sans-serif" font-size="5.6" font-weight="700" letter-spacing="1.1">ADD A CAPTION</text>
+              <rect x="49" y="165" width="70" height="15" rx="6" fill="#0C0308"/>
+              <text x="56" y="175" textLength="57" lengthAdjust="spacingAndGlyphs" fill="#8C6F7E" font-family="Archivo, Arial, sans-serif" font-size="7">Say something nice</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="num">3</span>
+          <div>
+            <h3>See it</h3>
+            <p>Look up. Your photo is already on the big screen. Tap once more and send another.</p>
+          </div>
+          <div class="art">
+            <svg viewBox="0 0 168 196" role="img" aria-label="The confirmation screen reading Your photo is live, look up at the big screen.">
+              <rect x="34" y="4" width="100" height="188" rx="14" fill="#180611"/>
+              <rect x="39" y="9" width="90" height="178" rx="10" fill="#33122A"/>
+              <rect x="72" y="13" width="24" height="3.4" rx="1.7" fill="#180611"/>
+              <text x="84" y="36" text-anchor="middle" textLength="64" lengthAdjust="spacingAndGlyphs" fill="#FFC759" font-family="Archivo Black, Arial Black, sans-serif" font-size="10">Your photo is live!</text>
+              <text x="84" y="48" text-anchor="middle" textLength="64" lengthAdjust="spacingAndGlyphs" fill="#D9BCCB" font-family="Archivo, Arial, sans-serif" font-size="7.2">Look up at the big screen.</text>
+              <!-- the shared photo, confirmed -->
+              <defs>
+                <linearGradient id="snapG" x1="0" y1="0" x2="0.7" y2="1">
+                  <stop offset="0" stop-color="#FFB25C"/><stop offset="0.55" stop-color="#E8336D"/><stop offset="1" stop-color="#451B39"/>
+                </linearGradient>
+              </defs>
+              <rect x="49" y="56" width="70" height="76" rx="8" fill="url(#snapG)" stroke="#FFC759" stroke-width="1.8"/>
+              <g fill="#240B1B" opacity="0.62">
+                <circle cx="66" cy="94" r="7"/><path d="M57 132v-27a9 9 0 0118 0v27z"/>
+                <circle cx="85" cy="89" r="8"/><path d="M75 132v-30a10 10 0 0120 0v30z"/>
+                <circle cx="104" cy="96" r="6.5"/><path d="M96 132v-25a8 8 0 0116 0v25z"/>
+              </g>
+              <g fill="#FFC759" opacity="0.85">
+                <path d="M58 66l1.6 3.4 3.4 1.6-3.4 1.6L58 76l-1.6-3.4-3.4-1.6 3.4-1.6z"/>
+                <path d="M110 70l1.2 2.6 2.6 1.2-2.6 1.2-1.2 2.6-1.2-2.6-2.6-1.2 2.6-1.2z"/>
+              </g>
+              <rect x="49" y="142" width="70" height="24" rx="9" fill="url(#btnG)"/>
+              <text x="84" y="157" text-anchor="middle" textLength="54" lengthAdjust="spacingAndGlyphs" fill="#FFF4E8" font-family="Archivo, Arial, sans-serif" font-size="8" font-weight="700">Share another</text>
+              <text x="84" y="178" text-anchor="middle" textLength="56" lengthAdjust="spacingAndGlyphs" fill="#8C6F7E" font-family="Archivo, Arial, sans-serif" font-size="6.6">Shared as Tita Baby</text>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ 3 · THE BIG SCREEN ============ -->
+    <section class="screen pad">
+      <figure>
+        <svg viewBox="0 0 320 214" role="img" aria-label="A television showing the live photo wall: a guest photo with the name Tita Baby and a caption underneath.">
+          <defs>
+            <linearGradient id="wallG" x1="0.1" y1="0" x2="0.9" y2="1">
+              <stop offset="0" stop-color="#FFC759"/><stop offset="0.42" stop-color="#FF8A3D"/>
+              <stop offset="0.78" stop-color="#E8336D"/><stop offset="1" stop-color="#33122A"/>
+            </linearGradient>
+            <linearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#180611" stop-opacity="0"/>
+              <stop offset="1" stop-color="#180611" stop-opacity="0.88"/>
+            </linearGradient>
+          </defs>
+
+          <!-- tv body -->
+          <rect x="4" y="4" width="312" height="180" rx="8" fill="#0C0308"/>
+          <rect x="11" y="11" width="298" height="166" rx="3" fill="#180611"/>
+          <!-- live photo -->
+          <rect x="11" y="11" width="298" height="166" fill="url(#wallG)"/>
+          <g fill="#240B1B" opacity="0.55">
+            <circle cx="88" cy="74" r="15"/><path d="M68 177v-58a20 20 0 0140 0v58z"/>
+            <circle cx="140" cy="62" r="18"/><path d="M117 177v-70a23 23 0 0146 0v70z"/>
+            <circle cx="196" cy="78" r="14"/><path d="M177 177v-55a19 19 0 0138 0v55z"/>
+            <circle cx="248" cy="86" r="12"/><path d="M232 177v-48a16 16 0 0132 0v48z"/>
+          </g>
+          <g fill="#FFF4E8" opacity="0.5">
+            <path d="M40 40l2.6 5.4L48 48l-5.4 2.6L40 56l-2.6-5.4L32 48l5.4-2.6z"/>
+            <path d="M282 34l2 4 4 2-4 2-2 4-2-4-4-2 4-2z"/>
+            <path d="M258 52l1.5 3 3 1.5-3 1.5-1.5 3-1.5-3-3-1.5 3-1.5z"/>
+          </g>
+          <rect x="11" y="106" width="298" height="71" fill="url(#scrim)"/>
+          <text x="26" y="150" fill="#FFFFFF" font-family="Archivo Black, Arial Black, sans-serif" font-size="15">Tita Baby</text>
+          <text x="26" y="166" fill="#FFF4E8" font-family="Archivo, Arial, sans-serif" font-size="9.6" opacity="0.94">Sabay-sabay! Everyone on the dance floor 🎉</text>
+          <!-- live chip -->
+          <g>
+            <rect x="243" y="24" width="52" height="17" rx="8.5" fill="#180611" fill-opacity="0.62"/>
+            <circle cx="255" cy="32.5" r="3.6" fill="#E8336D"/>
+            <text x="263" y="36" fill="#FFF4E8" font-family="Archivo, Arial, sans-serif" font-size="8" font-weight="700" letter-spacing="1">LIVE</text>
+          </g>
+          <!-- stand -->
+          <path d="M132 184h56l6 18h-68z" fill="#0C0308"/>
+          <rect x="112" y="202" width="96" height="7" rx="3.5" fill="#0C0308"/>
+        </svg>
+      </figure>
+
+      <div>
+        <h2>The big screen<br>does the <em>work</em></h2>
+        <p>
+          Plug a laptop into the TV or projector and open one link. Photos fade in one after
+          another, and a brand-new one jumps the queue — so nobody waits to see theirs. If the hall
+          wi-fi stutters, the screen holds the picture and catches up on its own.
+        </p>
+        <p class="no-app">No app download required</p>
+      </div>
+    </section>
+
+    <!-- ============ 4 · TWO COLUMNS ============ -->
+    <section class="cols pad">
+      <div>
+        <h3>What you get as the organiser</h3>
+        <ul>
+          <li><b>Your event, set up in a minute.</b> Give it a name, pick a password, and it&#8217;s ready.</li>
+          <li><b>A QR code</b> to print for the tables or show on the screen.</li>
+          <li><b>Three links:</b> one for guests, one for the big screen, one just for you.</li>
+          <li><b>A dashboard on your phone.</b> See how many photos have come in, rename the event, and pause uploads with one tap when the speeches start.</li>
+        </ul>
+        <p class="later">
+          <b>Ready for launch in October</b>
+          Videos, the album to download and keep afterwards, and approval before a photo reaches
+          the screen.
+        </p>
+      </div>
+
+      <div>
+        <h3>Why not just a group chat</h3>
+        <ul>
+          <li><b>It happens in the room.</b> A group chat is something you scroll through next week. This is on the wall while Lola is still dancing.</li>
+          <li><b>Your photos stay in Europe.</b> Stored on European servers from day one — not sent around the world and back.</li>
+          <li><b>A real person behind it.</b> Sean can host or emcee the night himself, not just hand you a link.</li>
+          <li><b>Made for our celebrations.</b> Christenings, debuts, 80ths, reunions, fiestas — built by and for the Filipino community in Oslo.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ 5 · FAQ ============ -->
+    <section class="faq pad">
+      <h3>The questions everyone asks</h3>
+      <dl>
+        <div>
+          <dt>&#8220;Do my guests have to download something?&#8221;</dt>
+          <dd>No. The QR code opens an ordinary web page in the phone&#8217;s browser. No app, no account, no password for guests.</dd>
+        </div>
+        <div>
+          <dt>&#8220;My titas aren&#8217;t good with phones.&#8221;</dt>
+          <dd>Name, then photo. That&#8217;s it. The buttons are deliberately big and there is nothing else on the screen to get wrong.</dd>
+        </div>
+        <div>
+          <dt>&#8220;What if someone puts up something silly?&#8221;</dt>
+          <dd>You can pause uploads instantly from your own phone. Approval before anything reaches the screen arrives for the October launch.</dd>
+        </div>
+        <div>
+          <dt>&#8220;What if the venue wi-fi is bad?&#8221;</dt>
+          <dd>The screen keeps showing the current photo and quietly catches up when the signal returns — it doesn&#8217;t go blank.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- ============ 6 · FOOTER ============ -->
+    <footer class="foot pad">
+      <span class="mark">Pagmaytaym <span>Party</span></span>
+      <span class="tag-line">By Filipinos, for Filipinos — for friends, family and barkada.</span>
+      <span>First events · Oslo · October 2026</span>
+    </footer>
+
+  </article>
+</div>
+
+</body>
+</html>
